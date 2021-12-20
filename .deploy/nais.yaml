@@ -1,0 +1,17 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: familie-endringslogg
+  namespace: teamfamilie
+  labels:
+    team: teamfamilie
+spec:
+  image: {{ image }}
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_12
+        databases:
+          - envVarPrefix: db
+            name: familie-endringslogg
+  ingresses:
+    - https://familie-endringslogg.intern.nav.no
