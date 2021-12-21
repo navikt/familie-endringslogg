@@ -25,12 +25,17 @@ import no.nav.familie.insertSeenForcedEntries
 import no.nav.familie.insertSessionDuration
 import no.nav.familie.setLinkClicked
 import no.nav.familie.setModalOpen
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 import java.util.UUID
+
+val logger: Logger = LoggerFactory.getLogger("no.nav.familie.routing")
 
 fun Application.configureRouting(client: SanityClient) {
     routing {
         post("/endringslogg") {
+            logger.info("Henter ut endringslogg")
             val (userId, appId, dataset, maxEntries) = call.receive<BrukerData>()
             val seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
             val seenForcedEntryIds = getSeenForcedEntriesForUser(userId).map(UUID::toString).toSet()
@@ -50,7 +55,7 @@ fun Application.configureRouting(client: SanityClient) {
                     }
                 }
                 is Err -> {
-                    print("Got a client request exception with error code ${endringslogger.error.response.status.value} and message ${endringslogger.error.message}")
+                    logger.info("Got a client request exception with error code ${endringslogger.error.response.status.value} and message ${endringslogger.error.message}")
                     call.response.status(HttpStatusCode(endringslogger.error.response.status.value,
                                                         "Received error: ${endringslogger.error.message}"))
                 }
