@@ -32,6 +32,7 @@ fun Application.main() {
         host("ensligmorellerfar.dev.intern.nav.no", listOf("https"))
         host("ensligmorellerfar.intern.nav.no", listOf("https"))
         host("familie-endringslogg.sanity.studio", listOf("https"))
+        host("localhost:8000", listOf("http"))
 
         method(HttpMethod.Options)
         method(HttpMethod.Get)
