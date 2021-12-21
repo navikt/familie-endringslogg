@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    name: Build, push and deploy to prod-gcp
+    name: Build and push package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,12 +34,12 @@ jobs:
           docker build --tag ${IMAGE} .
           docker push ${IMAGE}
   deploy:
-    name: Deploy to GCP
+    name: Deploy to GCP (dev and prod)
     needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - name: Deploy til prod-dev
+      - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
@@ -51,4 +51,3 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
           RESOURCE: .deploy/nais-prod.yaml
-
