@@ -4,7 +4,7 @@ on:
     branches:
       - main
   workflow_dispatch:
-  
+
 env:
   IMAGE: ghcr.io/navikt/familie-endringslogg:${{ github.sha }}
 
@@ -39,9 +39,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - name: Deploy til prod-dev
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-gcp
+          RESOURCE: .deploy/nais-dev.yaml
       - name: Deploy til prod-gcp
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
-          RESOURCE: .deploy/nais.yaml
+          RESOURCE: .deploy/nais-prod.yaml
+
