@@ -32,7 +32,7 @@ class Err<out E>(val error: E) : Result<Nothing, E>()
 
 class SanityClient(
     private val projId: String,
-    apiVersion: String = "v2021-06-07",
+    apiVersion: String,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val baseUrl: String = "https://$projId.api.sanity.io/$apiVersion"
