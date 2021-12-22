@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+
+  # SQL database
+  postgres:
+    image: "postgres:11.5"
+    volumes:
+      - "familie-endringslogg:/var/lib/postgresql/data"
+    ports:
+      - "9876:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "test"
+      POSTGRES_DB: "familie-endringslogg"
+
+volumes:
+  familie-endringslogg:

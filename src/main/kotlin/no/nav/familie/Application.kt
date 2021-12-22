@@ -16,7 +16,9 @@ import no.nav.familie.env.DB_USERNAME
 import no.nav.familie.env.SANITY_PROJECT_ID
 import no.nav.familie.plugins.configureRouting
 import org.flywaydb.core.Flyway
+import org.slf4j.LoggerFactory
 
+private val logger = LoggerFactory.getLogger("no.nav.familie.Application")
 
 fun Application.main() {
     install(ContentNegotiation) {
@@ -26,9 +28,11 @@ fun Application.main() {
         })
     }
     install(CORS) {
+        logger.info("Setter opp cors")
         host("ensligmorellerfar.dev.intern.nav.no", listOf("https"))
         host("ensligmorellerfar.intern.nav.no", listOf("https"))
         host("familie-endringslogg.sanity.studio", listOf("https"))
+        host("localhost:8000", listOf("http"))
 
         method(HttpMethod.Options)
         method(HttpMethod.Get)
@@ -39,6 +43,7 @@ fun Application.main() {
 }
 
 fun main() {
+    logger.info("Kjører flyway")
     val flyway: Flyway = Flyway.configure().dataSource(
         "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require",
         DB_USERNAME,
@@ -46,7 +51,7 @@ fun main() {
     ).load()
     flyway.migrate()
 
-    val client = SanityClient(SANITY_PROJECT_ID, "production")
+    val client = SanityClient(SANITY_PROJECT_ID, "v1")
 
     connectToDatabase()
 
