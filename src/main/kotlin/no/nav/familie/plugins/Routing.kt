@@ -13,6 +13,7 @@ import no.nav.familie.DocumentId
 import no.nav.familie.SeenForcedStatus
 import no.nav.familie.SeenStatus
 import no.nav.familie.SessionDuration
+import no.nav.familie.env.erIDev
 import no.nav.familie.getAllEntriesInSeen
 import no.nav.familie.getAllEntriesInUserSessions
 import no.nav.familie.getSeenEntriesForAppId
@@ -40,24 +41,34 @@ fun Application.configureRouting(client: SanityClient) {
             val seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
             val seenForcedEntryIds = getSeenForcedEntriesForUser(userId).map(UUID::toString).toSet()
 
+            val alleMeldingerQuery = "*[_type=='$appId'][0...$maxEntries]"
+            val publiserteMedlingerQuery = "*[_type=='$appId'][0...$maxEntries][publisert]"
 
-            val queryStringEncoded = URLEncoder.encode("*[_type=='$appId'][0...$maxEntries]", "utf-8")
+            val query = if (erIDev()) alleMeldingerQuery else publiserteMedlingerQuery
+
+            val queryStringEncoded = URLEncoder.encode(query, "utf-8")
             when (val endringslogger = client.query(queryStringEncoded, dataset)) {
                 is Ok -> {
                     if (endringslogger.value.result.isEmpty()) {
                         call.response.status(HttpStatusCode(204, "Data for app $appId doesn't exist."))
                     } else {
                         call.respond(endringslogger.value.result.map {
-                            it.copy(seen = it.id in seenEntryIds,
-                                    seenForced = it.id in seenForcedEntryIds,
-                                    forcedModal = it.modal?.forcedModal)
+                            it.copy(
+                                seen = it.id in seenEntryIds,
+                                seenForced = it.id in seenForcedEntryIds,
+                                forcedModal = it.modal?.forcedModal
+                            )
                         })
                     }
                 }
                 is Err -> {
                     logger.info("Got a client request exception with error code ${endringslogger.error.response.status.value} and message ${endringslogger.error.message}")
-                    call.response.status(HttpStatusCode(endringslogger.error.response.status.value,
-                                                        "Received error: ${endringslogger.error.message}"))
+                    call.response.status(
+                        HttpStatusCode(
+                            endringslogger.error.response.status.value,
+                            "Received error: ${endringslogger.error.message}"
+                        )
+                    )
                 }
             }
 
