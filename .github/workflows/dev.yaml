@@ -1,4 +1,4 @@
-name: Build-Deploy prod
+name: Build-Deploy dev
 on: [workflow_dispatch, push]
 
 env:
