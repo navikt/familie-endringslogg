@@ -44,6 +44,8 @@ fun Application.configureRouting(client: SanityClient) {
             val alleMeldingerQuery = "*[_type=='$appId'][0...$maxEntries]"
             val publiserteMedlingerQuery = "*[_type=='$appId'][0...$maxEntries][publisert]"
 
+            logger.info("Er i dev: ${erIDev()}")
+            logger.info("Cluster: ${System.getenv("NAIS_CLUSTER_NAME")}")
             val query = if (erIDev()) alleMeldingerQuery else publiserteMedlingerQuery
 
             val queryStringEncoded = URLEncoder.encode(query, "utf-8")
