@@ -1,6 +1,5 @@
 name: Build-Deploy prod
-on:
-  workflow_dispatch:
+on: [workflow_dispatch, push]
 
 env:
   IMAGE: ghcr.io/navikt/familie-endringslogg:${{ github.sha }}
