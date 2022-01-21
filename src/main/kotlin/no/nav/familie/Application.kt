@@ -31,6 +31,8 @@ fun Application.main() {
         logger.info("Setter opp cors")
         host("ensligmorellerfar.dev.intern.nav.no", listOf("https"))
         host("ensligmorellerfar.intern.nav.no", listOf("https"))
+        host("barnetrygd.dev.intern.nav.no", listOf("https"))
+        host("barnetrygd.intern.nav.no", listOf("https"))
         host("familie-endringslogg.sanity.studio", listOf("https"))
         host("localhost:8000", listOf("http"))
 
