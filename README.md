@@ -20,6 +20,13 @@ For å kjøre lokalt:
 
 Prosjektet er laget med utgangspunkt i `poao-endringslogg`
 
+# Ny saksbehandlingsløsning?
+For at nye saksbehandlingsløsninger skal ta ibruk dette må det opprettes en endring i:
+- https://github.com/navikt/familie-endringslogg-sanity/blob/main/schemas/schema.js - Legg til ny løsning med app-id
+- https://github.com/navikt/familie-endringslogg/blob/main/src/main/kotlin/no/nav/familie/Application.kt - legge inn nye url-er i cors
+- Legge til nye personer i sanity studio som får tilgang til å redigere innhold
+- Frontend-komponent: https://www.npmjs.com/package/@navikt/familie-endringslogg
+
 ## For NAV-ansatte
 
 Interne henvendelser kan sendes via Slack i kanalen #team-familie.
