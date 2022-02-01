@@ -175,10 +175,12 @@ class SanityClient(
 
         @Throws(Exception::class)
         override fun onOpen() {
+            logger.info("Åpner stream mot Sanity")
         }
 
         @Throws(Exception::class)
         override fun onClosed() {
+            logger.info("Lukker stream mot Sanity")
         }
 
         /* Handles events from Sanity listen API*/
@@ -218,11 +220,15 @@ class SanityClient(
         }
 
         override fun onError(t: Throwable) {
-            logger.error("En feil oppstod", t)
+            if (t is StreamResetException) {
+               logger.info("Stream mot Sanity ble resatt", t)
+            } else {
+                logger.error("En feil oppstod", t)
+            }
         }
 
         override fun onComment(comment: String) {
-            logger.info("keeping connection alive")
+            logger.debug("Holder stream mot Sanity i gang")
         }
     }
 
