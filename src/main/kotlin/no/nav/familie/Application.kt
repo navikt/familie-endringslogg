@@ -33,6 +33,8 @@ fun Application.main() {
         host("ensligmorellerfar.intern.nav.no", listOf("https"))
         host("barnetrygd.dev.intern.nav.no", listOf("https"))
         host("barnetrygd.intern.nav.no", listOf("https"))
+        host("app.adeo.no", listOf("https"))
+        host("app-q1.adeo.no", listOf("https"))
         host("familie-endringslogg.sanity.studio", listOf("https"))
         host("localhost:8000", listOf("http"))
 
