@@ -35,6 +35,8 @@ fun Application.main() {
         host("barnetrygd.intern.nav.no", listOf("https"))
         host("app.adeo.no", listOf("https"))
         host("app-q1.adeo.no", listOf("https"))
+        host("k9-los-web.nais.adeo.no", listOf("https"))
+        host("k9-los-web.dev.adeo.no", listOf("https"))
         host("familie-endringslogg.sanity.studio", listOf("https"))
         host("localhost:8000", listOf("http"))
 
