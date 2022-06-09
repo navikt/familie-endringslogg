@@ -1,12 +1,17 @@
 package no.nav.familie
 
 import SanityClient
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.http.*
-import io.ktor.serialization.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.features.CORS
+import io.ktor.features.ContentNegotiation
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.serialization.json
+import io.ktor.server.engine.applicationEngineEnvironment
+import io.ktor.server.engine.connector
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import kotlinx.serialization.json.Json
 import no.nav.familie.env.DB_DATABASE
 import no.nav.familie.env.DB_HOST
@@ -22,10 +27,12 @@ private val logger = LoggerFactory.getLogger("no.nav.familie.Application")
 
 fun Application.main() {
     install(ContentNegotiation) {
-        json(Json {
-            prettyPrint = true
-            encodeDefaults = true
-        })
+        json(
+            Json {
+                prettyPrint = true
+                encodeDefaults = true
+            }
+        )
     }
     install(CORS) {
         logger.info("Setter opp cors")
@@ -61,15 +68,18 @@ fun main() {
 
     connectToDatabase()
 
-    embeddedServer(Netty, environment = applicationEngineEnvironment {
-        module {
-            main()
-            configureRouting(client)
+    embeddedServer(
+        Netty,
+        environment = applicationEngineEnvironment {
+            module {
+                main()
+                configureRouting(client)
+            }
+            connector {
+                port = 8080
+                host = "0.0.0.0"
+            }
         }
-        connector {
-            port = 8080
-            host = "0.0.0.0"
-        }
-    }) {
+    ) {
     }.start(wait = true)
 }
