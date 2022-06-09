@@ -3,11 +3,15 @@ package no.nav.familie.plugins
 import Err
 import Ok
 import SanityClient
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.receive
+import io.ktor.response.respond
+import io.ktor.routing.get
+import io.ktor.routing.patch
+import io.ktor.routing.post
+import io.ktor.routing.routing
 import no.nav.familie.BrukerData
 import no.nav.familie.DocumentId
 import no.nav.familie.SeenForcedStatus
@@ -52,13 +56,15 @@ fun Application.configureRouting(client: SanityClient) {
                     if (endringslogger.value.result.isEmpty()) {
                         call.response.status(HttpStatusCode(204, "Data for app $appId doesn't exist."))
                     } else {
-                        call.respond(endringslogger.value.result.map {
-                            it.copy(
-                                seen = it.id in seenEntryIds,
-                                seenForced = it.id in seenForcedEntryIds,
-                                forcedModal = it.modal?.forcedModal
-                            )
-                        })
+                        call.respond(
+                            endringslogger.value.result.map {
+                                it.copy(
+                                    seen = it.id in seenEntryIds,
+                                    seenForced = it.id in seenForcedEntryIds,
+                                    forcedModal = it.modal?.forcedModal
+                                )
+                            }
+                        )
                     }
                 }
                 is Err -> {
@@ -71,7 +77,6 @@ fun Application.configureRouting(client: SanityClient) {
                     )
                 }
             }
-
         }
         post("/analytics/sett-endringer") {
             val seen = call.receive<SeenStatus>()
@@ -100,7 +105,6 @@ fun Application.configureRouting(client: SanityClient) {
             setLinkClicked(id.documentId)
             call.respond(HttpStatusCode.OK) // TODO: Return status for insert
         }
-
 
         get("/data/seen-all") {
             call.respond(getAllEntriesInSeen())

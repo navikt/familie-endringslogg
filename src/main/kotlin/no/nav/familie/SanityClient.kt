@@ -1,30 +1,42 @@
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.launchdarkly.eventsource.*
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
+import com.launchdarkly.eventsource.ConnectionErrorHandler
+import com.launchdarkly.eventsource.EventHandler
+import com.launchdarkly.eventsource.EventSource
+import com.launchdarkly.eventsource.MessageEvent
+import io.ktor.client.HttpClient
+import io.ktor.client.call.receive
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.runBlocking
-import io.ktor.client.statement.*
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
-import java.net.URI
-import java.time.*
-import java.time.temporal.TemporalAdjusters
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import kotlin.collections.HashMap
 import no.nav.familie.EndringJson
 import no.nav.familie.SlideImageDl
 import no.nav.familie.SlideImageJson
 import no.nav.familie.SubscribedApp
 import okhttp3.internal.http2.StreamResetException
 import org.slf4j.LoggerFactory
+import java.net.URI
+import java.time.Clock
+import java.time.DayOfWeek
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.temporal.TemporalAdjusters
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
+import kotlin.collections.contains
+import kotlin.collections.hashMapOf
+import kotlin.collections.isNotEmpty
+import kotlin.collections.map
+import kotlin.collections.set
 
 sealed class Result<out T, out E>
 class Ok<out T>(val value: T) : Result<T, Nothing>()
@@ -38,10 +50,12 @@ class SanityClient(
     private val baseUrl: String = "https://$projId.api.sanity.io/$apiVersion"
     private val client = HttpClient(CIO) {
         install(JsonFeature) {
-            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
-                prettyPrint = true
-                ignoreUnknownKeys = true
-            })
+            serializer = KotlinxSerializer(
+                kotlinx.serialization.json.Json {
+                    prettyPrint = true
+                    ignoreUnknownKeys = true
+                }
+            )
         }
     }
 
@@ -59,7 +73,6 @@ class SanityClient(
         }
 
         return byteArr
-
     }
 
     fun query(queryString: String, dataset: String): Result<EndringJson, ClientRequestException> {
@@ -77,26 +90,28 @@ class SanityClient(
         runBlocking {
             response = client.get("$baseUrl/data/query/$dataset?query=$queryString")
         }
-        val responseWithImage = EndringJson(response.result.map {
-            it.copy(
-                modal = it.modal?.copy(
-                    slides = it.modal.slides.map { s ->
-                        when (s.image) {
-                            is SlideImageJson ->
-                                s.copy(
-                                    image = SlideImageDl(
-                                        imageObjToByteArray(
-                                            s.image.slideImage.jsonObject,
-                                            dataset
+        val responseWithImage = EndringJson(
+            response.result.map {
+                it.copy(
+                    modal = it.modal?.copy(
+                        slides = it.modal.slides.map { s ->
+                            when (s.image) {
+                                is SlideImageJson ->
+                                    s.copy(
+                                        image = SlideImageDl(
+                                            imageObjToByteArray(
+                                                s.image.slideImage.jsonObject,
+                                                dataset
+                                            )
                                         )
                                     )
-                                )
-                            else -> s
+                                else -> s
+                            }
                         }
-                    }
+                    )
                 )
-            )
-        })
+            }
+        )
         val listenUrl = "$baseUrl/data/listen/$dataset?query=$queryString&includeResult=false&visibility=query"
         // call was successful. must then check if the response is empty. If empty -> don't subscribe
         if (response.result.isNotEmpty() and !subscribedApps.contains(listenUrl)) {
@@ -146,14 +161,13 @@ class SanityClient(
 
         // Schedule task to ensure that connection has been established. If not, remove data from cache
         Executors.newSingleThreadScheduledExecutor().schedule({
-                                                                  if (!subscribedApps[listenUrl]?.connectionEstablished!!) {
-                                                                      logger.warn("Connection to $listenUrl not established.")
-                                                                      subscribedApps[listenUrl]?.eventSource?.close()
-                                                                      subscribedApps.remove(listenUrl)
-                                                                      queryCache.asMap().remove(subscribedApps[listenUrl]?.cacheKey)
-                                                                  }
-                                                              }, 20, TimeUnit.SECONDS)
-
+            if (!subscribedApps[listenUrl]?.connectionEstablished!!) {
+                logger.warn("Connection to $listenUrl not established.")
+                subscribedApps[listenUrl]?.eventSource?.close()
+                subscribedApps.remove(listenUrl)
+                queryCache.asMap().remove(subscribedApps[listenUrl]?.cacheKey)
+            }
+        }, 20, TimeUnit.SECONDS)
     }
 
     /* calculates milliseconds from now until next given weekday with hourly offset in UTC time */
@@ -164,7 +178,7 @@ class SanityClient(
             .plusHours(hourOffset)
         val duration = Duration.between(LocalDateTime.now(Clock.systemUTC()), nextDay).toMillis()
         return if (duration < 0) {
-            duration + TimeUnit.DAYS.toMillis(7)  // add one week if calculated duration is negative
+            duration + TimeUnit.DAYS.toMillis(7) // add one week if calculated duration is negative
         } else {
             duration
         }
@@ -191,12 +205,12 @@ class SanityClient(
                     // cancels subscription, and clears cache every Saturday morning 01.00 UTC time
                     if (!subscribedApps[origin]!!.connectionEstablished) {
                         Executors.newSingleThreadScheduledExecutor().schedule({
-                                                                                  subscribedApps[origin]?.connectionEstablished = false
-                                                                                  subscribedApps[origin]?.eventSource?.close()
-                                                                                  queryCache.asMap().remove(subscribedApps[origin]?.cacheKey)
-                                                                                  subscribedApps.remove(origin)
-                                                                                  logger.info("Unsubscribed from listening API: $origin")
-                                                                              }, msToNextDay(DayOfWeek.SATURDAY, 1), TimeUnit.MILLISECONDS)
+                            subscribedApps[origin]?.connectionEstablished = false
+                            subscribedApps[origin]?.eventSource?.close()
+                            queryCache.asMap().remove(subscribedApps[origin]?.cacheKey)
+                            subscribedApps.remove(origin)
+                            logger.info("Unsubscribed from listening API: $origin")
+                        }, msToNextDay(DayOfWeek.SATURDAY, 1), TimeUnit.MILLISECONDS)
                     }
                     subscribedApps[origin]?.connectionEstablished = true
                     logger.info("Subscribing to listening API: $origin")
@@ -221,7 +235,7 @@ class SanityClient(
 
         override fun onError(t: Throwable) {
             if (t is StreamResetException) {
-               logger.info("Stream mot Sanity ble resatt", t)
+                logger.info("Stream mot Sanity ble resatt", t)
             } else {
                 logger.error("En feil oppstod", t)
             }

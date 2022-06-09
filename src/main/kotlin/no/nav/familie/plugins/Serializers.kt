@@ -1,16 +1,31 @@
-import io.ktor.util.*
-import kotlinx.serialization.*
-import kotlinx.serialization.descriptors.*
+import io.ktor.util.InternalAPI
+import io.ktor.util.encodeBase64
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import no.nav.familie.Modal
 import no.nav.familie.Slide
 import no.nav.familie.SlideImage
 import no.nav.familie.SlideImageDl
 import no.nav.familie.SlideImageJson
-import java.util.*
-
+import java.util.UUID
 
 @ExperimentalSerializationApi
 @Serializer(forClass = UUID::class)
@@ -44,7 +59,8 @@ object ModalSerializer : KSerializer<Modal?> {
             return
         }
         encoder.encodeSerializableValue(
-            JsonObject.serializer(), JsonObject(
+            JsonObject.serializer(),
+            JsonObject(
                 mapOf(
                     "header" to JsonPrimitive(value.title),
                     "slides" to JsonArray(value.slides.map(Json::encodeToJsonElement))
@@ -85,7 +101,8 @@ object SlideSerializer : KSerializer<Slide?> {
             return
         }
         encoder.encodeSerializableValue(
-            JsonObject.serializer(), JsonObject(
+            JsonObject.serializer(),
+            JsonObject(
                 listOfNotNull(
                     "slideHeader" to JsonPrimitive(value.header),
                     if (value.description != null) "slideDescription" to value.description else null,

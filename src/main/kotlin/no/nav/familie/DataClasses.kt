@@ -7,7 +7,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
-import no.nav.familie.env.*
+import no.nav.familie.env.SANITY_PROJECT_ID
 
 @Serializable
 data class EndringJson(val result: List<Endring>)
@@ -35,7 +35,6 @@ typealias BlockContent = JsonElement
 @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
 @Serializable(with = ModalSerializer::class)
 data class Modal(val title: String, val forcedModal: Boolean, val slides: List<Slide>)
-
 
 @Serializable sealed class SlideImage {
 
@@ -70,7 +69,6 @@ data class SeenForcedStatus(
     val documentIds: List<String>
 )
 
-
 @Serializable
 data class SessionDuration(
     val userId: String,
@@ -78,7 +76,6 @@ data class SessionDuration(
     val duration: Int,
     val unseenFields: Int
 )
-
 
 @Serializable
 data class SeenWithTime(
