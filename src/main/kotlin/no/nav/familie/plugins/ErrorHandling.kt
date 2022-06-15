@@ -9,6 +9,7 @@ import io.ktor.server.application.log
 import io.ktor.server.plugins.callid.callId
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.header
+import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import org.slf4j.MDC
@@ -26,7 +27,10 @@ fun Application.errorHandling() {
                     else -> HttpStatusCode.InternalServerError
                 }
 
-                call.application.log.error("Feilet håndtering av ${call.request.path()} status=$responseStatus", cause)
+                call.application.log.error(
+                    "Feilet håndtering av ${call.request.httpMethod} - ${call.request.path()} status=$responseStatus",
+                    cause
+                )
                 call.respond(
                     responseStatus,
                     mapOf(
