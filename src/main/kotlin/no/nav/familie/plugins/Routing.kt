@@ -40,7 +40,6 @@ val logger: Logger = LoggerFactory.getLogger("no.nav.familie.routing")
 fun Application.configureRouting(client: SanityClient) {
     routing {
         post("/endringslogg") {
-            logger.info("Henter ut endringslogg")
             val (userId, appId, dataset, maxEntries) = call.receive<BrukerData>()
             val seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
             val seenForcedEntryIds = getSeenForcedEntriesForUser(userId).map(UUID::toString).toSet()

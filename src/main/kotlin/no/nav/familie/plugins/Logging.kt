@@ -2,12 +2,13 @@ package no.nav.familie.plugins
 
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.plugins.callid.CallId
 import io.ktor.server.plugins.callloging.CallLogging
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.header
 import java.util.UUID
 
-private const val RANDOM_USER_ID_COOKIE_NAME = "RUIDC"
+const val RANDOM_USER_ID_COOKIE_NAME = "RUIDC"
 
 object MDCConstants {
     const val CONSUMER_ID = "consumerId"
@@ -16,6 +17,10 @@ object MDCConstants {
 }
 
 fun Application.configureLogging() {
+    install(CallId) {
+        retrieve { resolveCallId(it.request) }
+        replyToHeader("Nav-Call-Id")
+    }
     install(CallLogging) {
         disableDefaultColors()
         mdc(MDCConstants.CONSUMER_ID) { call ->
