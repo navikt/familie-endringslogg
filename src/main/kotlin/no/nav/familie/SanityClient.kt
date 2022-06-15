@@ -6,14 +6,15 @@ import com.launchdarkly.eventsource.EventHandler
 import com.launchdarkly.eventsource.EventSource
 import com.launchdarkly.eventsource.MessageEvent
 import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
+import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.features.ClientRequestException
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import no.nav.familie.EndringJson
@@ -49,9 +50,9 @@ class SanityClient(
     private val logger = LoggerFactory.getLogger(javaClass)
     private val baseUrl: String = "https://$projId.api.sanity.io/$apiVersion"
     private val client = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(
-                kotlinx.serialization.json.Json {
+        install(ContentNegotiation) {
+            json(
+                Json {
                     prettyPrint = true
                     ignoreUnknownKeys = true
                 }
@@ -69,7 +70,7 @@ class SanityClient(
         val byteArr: ByteArray
         runBlocking {
             httpResp = client.get(url)
-            byteArr = httpResp.receive()
+            byteArr = httpResp.body()
         }
 
         return byteArr
@@ -88,7 +89,7 @@ class SanityClient(
     private fun querySanity(queryString: String, dataset: String): EndringJson {
         val response: EndringJson
         runBlocking {
-            response = client.get("$baseUrl/data/query/$dataset?query=$queryString")
+            response = client.get("$baseUrl/data/query/$dataset?query=$queryString").body()
         }
         val responseWithImage = EndringJson(
             response.result.map {
