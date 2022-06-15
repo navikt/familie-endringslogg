@@ -1,17 +1,17 @@
 package no.nav.familie
 
 import SanityClient
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.features.CORS
-import io.ktor.features.ContentNegotiation
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.serialization.json
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
 import io.ktor.server.engine.applicationEngineEnvironment
 import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.routing.CORS
 import kotlinx.serialization.json.Json
 import no.nav.familie.env.DB_DATABASE
 import no.nav.familie.env.DB_HOST
@@ -36,22 +36,22 @@ fun Application.main() {
     }
     install(CORS) {
         logger.info("Setter opp cors")
-        host("ensligmorellerfar.dev.intern.nav.no", listOf("https"))
-        host("ensligmorellerfar.intern.nav.no", listOf("https"))
-        host("barnetrygd.dev.intern.nav.no", listOf("https"))
-        host("barnetrygd.intern.nav.no", listOf("https"))
-        host("app.adeo.no", listOf("https"))
-        host("app-q1.adeo.no", listOf("https"))
-        host("k9-los-web.nais.adeo.no", listOf("https"))
-        host("k9-los-web.dev.adeo.no", listOf("https"))
-        host("familie-endringslogg.sanity.studio", listOf("https"))
-        host("localhost:8000", listOf("http"))
+        allowHost("ensligmorellerfar.dev.intern.nav.no", listOf("https"))
+        allowHost("ensligmorellerfar.intern.nav.no", listOf("https"))
+        allowHost("barnetrygd.dev.intern.nav.no", listOf("https"))
+        allowHost("barnetrygd.intern.nav.no", listOf("https"))
+        allowHost("app.adeo.no", listOf("https"))
+        allowHost("app-q1.adeo.no", listOf("https"))
+        allowHost("k9-los-web.nais.adeo.no", listOf("https"))
+        allowHost("k9-los-web.dev.adeo.no", listOf("https"))
+        allowHost("familie-endringslogg.sanity.studio", listOf("https"))
+        allowHost("localhost:8000", listOf("http"))
 
-        method(HttpMethod.Options)
-        method(HttpMethod.Get)
-        method(HttpMethod.Post)
-        method(HttpMethod.Patch)
-        header(HttpHeaders.ContentType)
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Patch)
+        allowHeader(HttpHeaders.ContentType)
     }
 }
 
