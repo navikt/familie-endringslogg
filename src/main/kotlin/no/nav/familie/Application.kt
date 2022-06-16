@@ -19,7 +19,9 @@ import no.nav.familie.env.DB_PASSWORD
 import no.nav.familie.env.DB_PORT
 import no.nav.familie.env.DB_USERNAME
 import no.nav.familie.env.SANITY_PROJECT_ID
+import no.nav.familie.plugins.configureLogging
 import no.nav.familie.plugins.configureRouting
+import no.nav.familie.plugins.errorHandling
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
 
@@ -72,6 +74,8 @@ fun main() {
         Netty,
         environment = applicationEngineEnvironment {
             module {
+                configureLogging()
+                errorHandling()
                 main()
                 configureRouting(client)
             }
