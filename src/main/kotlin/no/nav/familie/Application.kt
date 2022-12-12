@@ -44,6 +44,8 @@ fun Application.main() {
         allowHost("barnetrygd.intern.nav.no", listOf("https"))
         allowHost("app.adeo.no", listOf("https"))
         allowHost("app-q1.adeo.no", listOf("https"))
+        allowHost("k9.intern.nav.no", listOf("https"))
+        allowHost("k9.dev.intern.nav.no", listOf("https"))
         allowHost("k9-los-web.nais.adeo.no", listOf("https"))
         allowHost("k9-los-web.dev.adeo.no", listOf("https"))
         allowHost("familie-endringslogg.sanity.studio", listOf("https"))
