@@ -44,8 +44,8 @@ fun Application.configureRouting(client: SanityClient) {
             val seenEntryIds = getSeenEntriesForUser(userId).map(UUID::toString).toSet()
             val seenForcedEntryIds = getSeenForcedEntriesForUser(userId).map(UUID::toString).toSet()
 
-            val alleMeldingerQuery = "*[_type=='$appId'][0...$maxEntries]"
-            val publiserteMedlingerQuery = "*[_type=='$appId'][0...$maxEntries][publisert]"
+            val alleMeldingerQuery = "*[_type=='$appId']|order(_createdAt desc)[0...$maxEntries]"
+            val publiserteMedlingerQuery = "*[_type=='$appId']|[publisert]|order(_createdAt desc)[0...$maxEntries]"
 
             val query = if (erIDev()) alleMeldingerQuery else publiserteMedlingerQuery
 
