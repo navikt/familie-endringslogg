@@ -38,7 +38,7 @@ fun Application.main() {
     }
     install(CORS) {
         logger.info("Setter opp cors")
-        allowHost("ensligmorellerfar.intern.dev.nav.no", listOf("https"))
+        allowHost("ensligmorellerfar.intern.dev.nav.no", listOf("https", "http"))
         allowHost("ensligmorellerfar.intern.nav.no", listOf("https"))
         allowHost("barnetrygd.intern.dev.nav.no", listOf("https"))
         allowHost("barnetrygd.intern.nav.no", listOf("https"))
