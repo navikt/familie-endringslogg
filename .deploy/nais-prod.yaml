@@ -15,3 +15,11 @@ spec:
             name: familie-endringslogg
   ingresses:
     - https://familie-endringslogg.intern.nav.no
+  accessPolicy:
+    inbound:
+      rules:
+        - application: familie-ef-sak-frontend
+        - application: familie-ba-sak-frontend
+        - application: familie-ks-sak-frontend
+        - application: familie-klage-frontend
+        - application: familie-tilbake-frontend
