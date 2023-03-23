@@ -14,7 +14,6 @@ spec:
           - envVarPrefix: db
             name: familie-endringslogg
   ingresses:
-    - https://familie-endringslogg.dev.intern.nav.no # Deprecated
     - https://familie-endringslogg.intern.dev.nav.no
   accessPolicy:
     inbound:
