@@ -23,3 +23,7 @@ spec:
         - application: familie-ks-sak-frontend
         - application: familie-klage-frontend
         - application: familie-tilbake-frontend
+    outbound:
+      external:
+        - host: cdn.sanity.io
+        - host: avzz8jwq.api.sanity.io
