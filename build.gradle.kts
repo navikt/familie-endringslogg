@@ -55,7 +55,7 @@ dependencies {
     implementation("com.launchdarkly:okhttp-eventsource:2.3.2")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("com.h2database:h2:1.3.148")
+    testImplementation("com.h2database:h2:2.1.214")
 }
 
 
