@@ -1,4 +1,4 @@
-val ktor_version = "2.0.2"
+val ktor_version = "2.2.4"
 val kotlin_version: String by project
 val logback_version: String by project
 val logstash_encoder_version: String by project
