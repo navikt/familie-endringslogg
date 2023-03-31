@@ -7,7 +7,7 @@ val ktlint by configurations.creating
 
 plugins {
     application
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.8.20"
     kotlin("plugin.serialization") version "1.6.10"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
