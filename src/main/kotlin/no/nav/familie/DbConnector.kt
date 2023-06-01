@@ -1,5 +1,7 @@
 package no.nav.familie
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import no.nav.familie.env.DB_DATABASE
 import no.nav.familie.env.DB_HOST
 import no.nav.familie.env.DB_PASSWORD
@@ -57,16 +59,28 @@ object UserSession : Table("user_session") {
     override val primaryKey = PrimaryKey(userId, timeStamp)
 }
 
-fun connectToDatabase() {
+// https://ktor.io/docs/connection-pooling-caching.html#connection-settings-config
+private fun createHikariDataSource(
+    url: String,
+) = HikariDataSource(
+    HikariConfig().apply {
+        driverClassName = "org.postgresql.Driver"
+        jdbcUrl = url
+        username = DB_USERNAME
+        password = DB_PASSWORD
+        maximumPoolSize = 5
+        maxLifetime = 30_000
+        // isAutoCommit and transactionIsolation are set to sync with the default settings used by Exposed
+        isAutoCommit = false
+        transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+        validate()
+    },
+)
 
+fun connectToDatabase() {
     val connectUrl: String = "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require"
 
-    Database.connect(
-        connectUrl,
-        driver = "org.postgresql.Driver",
-        user = DB_USERNAME,
-        password = DB_PASSWORD
-    )
+    Database.connect(createHikariDataSource(connectUrl))
 }
 
 fun getSeenEntriesForUser(userId: String): List<UUID> = transaction {
@@ -105,7 +119,6 @@ fun setLinkClicked(docId: String) = transaction {
 }
 
 fun insertSessionDuration(session: SessionDuration) = transaction {
-
     UserSession.insert {
         it[UserSession.userId] = sha256(session.userId)
         it[UserSession.appId] = session.appId
