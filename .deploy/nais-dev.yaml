@@ -7,6 +7,8 @@ metadata:
     team: teamfamilie
 spec:
   image: {{ image }}
+  prometheus:
+    enabled: false
   gcp:
     sqlInstances:
       - type: POSTGRES_14
