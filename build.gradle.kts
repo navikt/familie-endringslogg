@@ -3,6 +3,7 @@ val kotlin_version: String by project
 val logback_version: String by project
 val logstash_encoder_version: String by project
 val exposed_version: String by project
+val hikaricp_version: String by project
 val ktlint by configurations.creating
 
 plugins {
@@ -48,6 +49,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
+    implementation("com.zaxxer:HikariCP:$hikaricp_version")
     implementation("org.postgresql:postgresql:42.2.23")
     implementation("com.google.cloud.sql:postgres-socket-factory:1.3.3")
     implementation("org.flywaydb:flyway-core:8.0.0-beta2")
