@@ -1,10 +1,11 @@
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.launchdarkly.eventsource.ConnectionErrorHandler
-import com.launchdarkly.eventsource.EventHandler
 import com.launchdarkly.eventsource.EventSource
 import com.launchdarkly.eventsource.MessageEvent
+import com.launchdarkly.eventsource.background.BackgroundEventHandler
+import com.launchdarkly.eventsource.background.BackgroundEventSource
+import com.launchdarkly.eventsource.background.ConnectionErrorHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -144,15 +145,15 @@ class SanityClient(
 
     private fun subscribeToSanityApp(listenUrl: String, queryString: String, dataset: String) {
         val eventHandler = MessageEventHandler()
-        val eventSource: EventSource = EventSource.Builder(eventHandler, URI.create(listenUrl))
-            .reconnectTime(Duration.ofMillis(3000))
+        val eventSource = EventSource.Builder(URI.create(listenUrl)).retryDelay(3, TimeUnit.SECONDS)
+        val backgroundEventSource: BackgroundEventSource = BackgroundEventSource.Builder(eventHandler, eventSource)
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 
-        eventSource.start()
+        backgroundEventSource.start()
         if (!subscribedApps.containsKey(listenUrl)) {
             subscribedApps[listenUrl] =
-                SubscribedApp(listenUrl, queryString, dataset, "$queryString.$dataset", eventSource)
+                SubscribedApp(listenUrl, queryString, dataset, "$queryString.$dataset", backgroundEventSource)
         }
 
         // Schedule task to ensure that connection has been established. If not, remove data from cache
@@ -181,7 +182,7 @@ class SanityClient(
     }
 
     /* Class to handle events from EventHandler */
-    private inner class MessageEventHandler : EventHandler {
+    private inner class MessageEventHandler : BackgroundEventHandler {
 
         @Throws(Exception::class)
         override fun onOpen() {

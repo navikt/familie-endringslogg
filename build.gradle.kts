@@ -1,4 +1,4 @@
-val ktor_version = "2.0.2"
+val ktor_version = "2.2.4"
 val kotlin_version: String by project
 val logback_version: String by project
 val logstash_encoder_version: String by project
@@ -50,14 +50,14 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
-    implementation("org.postgresql:postgresql:42.2.23")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.3.3")
-    implementation("org.flywaydb:flyway-core:8.0.0-beta2")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.0.4")
-    implementation("com.launchdarkly:okhttp-eventsource:2.3.2")
+    implementation("org.postgresql:postgresql:42.5.4")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.11.0")
+    implementation("org.flywaydb:flyway-core:9.16.0")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.5")
+    implementation("com.launchdarkly:okhttp-eventsource:4.1.0")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("com.h2database:h2:1.3.148")
+    testImplementation("com.h2database:h2:2.1.214")
 }
 
 
