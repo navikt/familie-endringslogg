@@ -17,6 +17,9 @@ spec:
             name: familie-endringslogg
   ingresses:
     - https://familie-endringslogg.intern.dev.nav.no
+  replicas:
+    min: 1
+    max: 2
   accessPolicy:
     inbound:
       rules:
