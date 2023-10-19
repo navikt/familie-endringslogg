@@ -2,7 +2,6 @@ package no.nav.familie
 
 import ModalSerializer
 import SlideSerializer
-import com.launchdarkly.eventsource.background.BackgroundEventSource
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
@@ -118,13 +117,4 @@ data class UniqueUsersPerDay(
     val appId: String,
     val moreThanMs: String,
     val lessThanMs: String
-)
-
-data class SubscribedApp(
-    val listenURL: String,
-    val queryString: String,
-    val dataset: String,
-    val cacheKey: String,
-    val eventSource: BackgroundEventSource,
-    var connectionEstablished: Boolean = false
 )
