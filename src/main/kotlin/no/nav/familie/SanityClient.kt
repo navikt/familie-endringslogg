@@ -2,6 +2,7 @@
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.launchdarkly.eventsource.EventSource
+import com.launchdarkly.eventsource.HttpConnectStrategy
 import com.launchdarkly.eventsource.MessageEvent
 import com.launchdarkly.eventsource.background.BackgroundEventHandler
 import com.launchdarkly.eventsource.background.BackgroundEventSource
@@ -145,7 +146,7 @@ class SanityClient(
 
     private fun subscribeToSanityApp(listenUrl: String, queryString: String, dataset: String) {
         val eventHandler = MessageEventHandler()
-        val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(eventHandler, EventSource.Builder(URI.create(listenUrl)))
+        val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(eventHandler, EventSource.Builder(HttpConnectStrategy.http(URI.create(listenUrl)).readTimeout(30, TimeUnit.MINUTES)))
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 
@@ -195,6 +196,7 @@ class SanityClient(
 
         /* Handles events from Sanity listen API*/
         override fun onMessage(event: String, messageEvent: MessageEvent) {
+            logger.info("Mottar melding")
             val origin = messageEvent.origin.toString()
             when (event) {
                 "welcome" -> { // connection is established
