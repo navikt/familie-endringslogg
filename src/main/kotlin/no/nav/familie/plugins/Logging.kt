@@ -1,18 +1,14 @@
 package no.nav.familie.plugins
 
 import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationCallPipeline
-import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.plugins.callid.CallId
 import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.callloging.processingTimeMillis
 import io.ktor.server.request.ApplicationRequest
 import io.ktor.server.request.header
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
-import io.ktor.util.AttributeKey
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 const val RANDOM_USER_ID_COOKIE_NAME = "RUIDC"
@@ -23,17 +19,10 @@ object MDCConstants {
     const val CALL_ID = "callId"
 }
 
-val CALL_START_TIME = AttributeKey<LocalDateTime>("CallStartTime")
-
 fun Application.configureLogging() {
     install(CallId) {
         retrieve { resolveCallId(it.request) }
         replyToHeader("Nav-Call-Id")
-    }
-
-    intercept(ApplicationCallPipeline.Setup) {
-        // intercept før routing
-        call.attributes.put(CALL_START_TIME, LocalDateTime.now())
     }
 
     install(CallLogging) {
@@ -52,10 +41,7 @@ fun Application.configureLogging() {
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
             val path = call.request.path()
-            val duration = when (val startTime = call.attributes.getOrNull(CALL_START_TIME)) {
-                null -> "?ms"
-                else -> "${startTime.until(LocalDateTime.now(), ChronoUnit.MILLIS)}ms"
-            }
+            val duration = call.processingTimeMillis()
             "$httpMethod - $path - (${status?.value}). Dette tok $duration"
         }
     }
