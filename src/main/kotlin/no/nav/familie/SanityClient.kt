@@ -1,10 +1,11 @@
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.launchdarkly.eventsource.ConnectionErrorHandler
-import com.launchdarkly.eventsource.EventHandler
 import com.launchdarkly.eventsource.EventSource
 import com.launchdarkly.eventsource.MessageEvent
+import com.launchdarkly.eventsource.background.BackgroundEventHandler
+import com.launchdarkly.eventsource.background.BackgroundEventSource
+import com.launchdarkly.eventsource.background.ConnectionErrorHandler
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -50,7 +51,7 @@ class SanityClient(
                 Json {
                     prettyPrint = true
                     ignoreUnknownKeys = true
-                }
+                },
             )
         }
     }
@@ -97,16 +98,16 @@ class SanityClient(
                                         image = SlideImageDl(
                                             imageObjToByteArray(
                                                 s.image.slideImage.jsonObject,
-                                                dataset
-                                            )
-                                        )
+                                                dataset,
+                                            ),
+                                        ),
                                     )
                                 else -> s
                             }
-                        }
-                    )
+                        },
+                    ),
                 )
-            }
+            },
         )
         val listenUrl = "$baseUrl/data/listen/$dataset?query=$queryString&includeResult=false&visibility=query"
         // call was successful. must then check if the response is empty. If empty -> don't subscribe
@@ -120,7 +121,7 @@ class SanityClient(
         cache: Cache<String, V>,
         query: String,
         dataset: String,
-        valueSupplier: (queryString: String, datasetString: String) -> V
+        valueSupplier: (queryString: String, datasetString: String) -> V,
     ): Result<V, ClientRequestException> {
         val key = "$query.$dataset"
         return try {
@@ -135,7 +136,7 @@ class SanityClient(
         cache: Cache<String, V>,
         query: String,
         dataset: String,
-        valueSupplier: (queryString: String, datasetString: String) -> V
+        valueSupplier: (queryString: String, datasetString: String) -> V,
     ) {
         val key = "$query.$dataset"
         val newValue = valueSupplier(query, dataset)
@@ -144,8 +145,7 @@ class SanityClient(
 
     private fun subscribeToSanityApp(listenUrl: String, queryString: String, dataset: String) {
         val eventHandler = MessageEventHandler()
-        val eventSource: EventSource = EventSource.Builder(eventHandler, URI.create(listenUrl))
-            .reconnectTime(Duration.ofMillis(3000))
+        val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(eventHandler, EventSource.Builder(URI.create(listenUrl)))
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 
@@ -181,7 +181,7 @@ class SanityClient(
     }
 
     /* Class to handle events from EventHandler */
-    private inner class MessageEventHandler : EventHandler {
+    private inner class MessageEventHandler : BackgroundEventHandler {
 
         @Throws(Exception::class)
         override fun onOpen() {
@@ -216,7 +216,7 @@ class SanityClient(
                     updateCache(
                         queryCache,
                         subscribedApps[origin]!!.queryString,
-                        subscribedApps[origin]!!.dataset
+                        subscribedApps[origin]!!.dataset,
                     ) { q, p -> querySanity(q, p) }
                 }
                 "disconnect" -> { // client should disconnect and stay disconnected. Likely due to a query error

@@ -2,7 +2,7 @@ package no.nav.familie
 
 import ModalSerializer
 import SlideSerializer
-import com.launchdarkly.eventsource.EventSource
+import com.launchdarkly.eventsource.background.BackgroundEventSource
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
@@ -125,6 +125,6 @@ data class SubscribedApp(
     val queryString: String,
     val dataset: String,
     val cacheKey: String,
-    val eventSource: EventSource,
+    val eventSource: BackgroundEventSource,
     var connectionEstablished: Boolean = false
 )
