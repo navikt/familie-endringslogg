@@ -146,7 +146,7 @@ class SanityClient(
 
     private fun subscribeToSanityApp(listenUrl: String, queryString: String, dataset: String) {
         val eventHandler = MessageEventHandler()
-        val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(eventHandler, EventSource.Builder(HttpConnectStrategy.http(URI.create(listenUrl)).readTimeout(30, TimeUnit.MINUTES)))
+        val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(eventHandler, EventSource.Builder(HttpConnectStrategy.http(URI.create(listenUrl)).readTimeout(57, TimeUnit.MINUTES)))
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 
