@@ -1,4 +1,4 @@
-val ktor_version = "2.2.4"
+val ktor_version = "2.3.7"
 val kotlin_version: String by project
 val logback_version: String by project
 val logstash_encoder_version: String by project
@@ -8,9 +8,9 @@ val ktlint by configurations.creating
 
 plugins {
     application
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    kotlin("jvm") version "1.9.21"
+    kotlin("plugin.serialization") version "1.9.21"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "no.nav.familie"
@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    ktlint("com.pinterest:ktlint:0.45.2") {
+    ktlint("com.pinterest:ktlint:0.51.0-FINAL") {
         attributes {
             attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
         }
@@ -50,14 +50,14 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
-    implementation("org.postgresql:postgresql:42.5.4")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.11.0")
-    implementation("org.flywaydb:flyway-core:9.16.0")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.1.5")
+    implementation("org.postgresql:postgresql:42.7.1")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.15.1")
+    implementation("org.flywaydb:flyway-core:10.3.0")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("com.h2database:h2:2.1.214")
+    testImplementation("com.h2database:h2:2.2.224")
 }
 
 
