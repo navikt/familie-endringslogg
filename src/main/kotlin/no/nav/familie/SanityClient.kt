@@ -167,10 +167,13 @@ class SanityClient(
 
     private fun resetSubscriptionAndCache(listenUrl: String) {
         logger.info("Nullstiller mot $listenUrl.")
+        val cachekey = subscribedApps[listenUrl]?.cacheKey
         subscribedApps[listenUrl]?.connectionEstablished = false
         subscribedApps[listenUrl]?.eventSource?.close()
         subscribedApps.remove(listenUrl)
-        queryCache.asMap().remove(subscribedApps[listenUrl]?.cacheKey)
+        if (cachekey != null) {
+            queryCache.asMap().remove(cachekey)
+        }
     }
     /* calculates milliseconds from now until next given weekday with hourly offset in UTC time */
     private fun msToNextDay(dayOfWeek: DayOfWeek, hourOffset: Long): Long {
