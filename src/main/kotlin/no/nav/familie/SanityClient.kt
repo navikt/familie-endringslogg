@@ -145,8 +145,8 @@ class SanityClient(
     }
 
     private fun subscribeToSanityApp(listenUrl: String, queryString: String, dataset: String) {
-        val eventHandler = MessageEventHandler()
-        val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(eventHandler, EventSource.Builder(HttpConnectStrategy.http(URI.create(listenUrl)).readTimeout(57, TimeUnit.MINUTES)))
+        val eventHandler = MessageEventHandler(listenUrl)
+        val eventSource: BackgroundEventSource = BackgroundEventSource.Builder(eventHandler, EventSource.Builder(HttpConnectStrategy.http(URI.create(listenUrl)).readTimeout(30, TimeUnit.MINUTES)))
             .connectionErrorHandler(SanityConnectionErrorHandler())
             .build()
 
@@ -160,13 +160,18 @@ class SanityClient(
         Executors.newSingleThreadScheduledExecutor().schedule({
             if (!subscribedApps[listenUrl]?.connectionEstablished!!) {
                 logger.warn("Connection to $listenUrl not established.")
-                subscribedApps[listenUrl]?.eventSource?.close()
-                subscribedApps.remove(listenUrl)
-                queryCache.asMap().remove(subscribedApps[listenUrl]?.cacheKey)
+                resetSubscriptionAndCache(listenUrl)
             }
         }, 20, TimeUnit.SECONDS)
     }
 
+    private fun resetSubscriptionAndCache(listenUrl: String) {
+        logger.info("Nullstiller mot $listenUrl.")
+        subscribedApps[listenUrl]?.connectionEstablished = false
+        subscribedApps[listenUrl]?.eventSource?.close()
+        subscribedApps.remove(listenUrl)
+        queryCache.asMap().remove(subscribedApps[listenUrl]?.cacheKey)
+    }
     /* calculates milliseconds from now until next given weekday with hourly offset in UTC time */
     private fun msToNextDay(dayOfWeek: DayOfWeek, hourOffset: Long): Long {
         val nextDay = LocalDate.now(Clock.systemUTC())
@@ -182,7 +187,7 @@ class SanityClient(
     }
 
     /* Class to handle events from EventHandler */
-    private inner class MessageEventHandler : BackgroundEventHandler {
+    private inner class MessageEventHandler(val listenUrl: String) : BackgroundEventHandler {
 
         @Throws(Exception::class)
         override fun onOpen() {
@@ -191,6 +196,7 @@ class SanityClient(
 
         @Throws(Exception::class)
         override fun onClosed() {
+            resetSubscriptionAndCache(listenUrl)
             logger.info("Lukker stream mot Sanity")
         }
 
@@ -203,10 +209,7 @@ class SanityClient(
                     // cancels subscription, and clears cache every Saturday morning 01.00 UTC time
                     if (!subscribedApps[origin]!!.connectionEstablished) {
                         Executors.newSingleThreadScheduledExecutor().schedule({
-                            subscribedApps[origin]?.connectionEstablished = false
-                            subscribedApps[origin]?.eventSource?.close()
-                            queryCache.asMap().remove(subscribedApps[origin]?.cacheKey)
-                            subscribedApps.remove(origin)
+                            resetSubscriptionAndCache(origin)
                             logger.info("Unsubscribed from listening API: $origin")
                         }, msToNextDay(DayOfWeek.SATURDAY, 1), TimeUnit.MILLISECONDS)
                     }
@@ -247,6 +250,7 @@ class SanityClient(
     /* Shuts down connection when connection attempt fails*/
     private inner class SanityConnectionErrorHandler : ConnectionErrorHandler {
         override fun onConnectionError(t: Throwable?): ConnectionErrorHandler.Action {
+            logger.info("ConnectionError mot Sanity", t)
             return if (t is StreamResetException) { // to handle stream resets every 30 minutes
                 ConnectionErrorHandler.Action.PROCEED
             } else {
