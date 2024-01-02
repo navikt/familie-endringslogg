@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.launchdarkly.eventsource.EventSource
 import com.launchdarkly.eventsource.HttpConnectStrategy
 import com.launchdarkly.eventsource.MessageEvent
+import com.launchdarkly.eventsource.StreamClosedByServerException
 import com.launchdarkly.eventsource.background.BackgroundEventHandler
 import com.launchdarkly.eventsource.background.BackgroundEventSource
 import com.launchdarkly.eventsource.background.ConnectionErrorHandler
@@ -238,10 +239,10 @@ class SanityClient(
         }
 
         override fun onError(t: Throwable) {
-            if (t is StreamResetException) {
-                logger.info("Stream mot Sanity ble resatt", t)
-            } else {
-                logger.error("En feil oppstod", t)
+            when (t) {
+                is StreamResetException -> logger.info("Stream mot Sanity ble resatt", t)
+                is StreamClosedByServerException -> logger.info("Connection mot sanity ble avbrutt", t)
+                else -> logger.error("En feil oppstod", t)
             }
         }
 
