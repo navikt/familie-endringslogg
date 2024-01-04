@@ -1,9 +1,9 @@
 val ktor_version = "2.3.7"
-val kotlin_version: String by project
-val logback_version: String by project
-val logstash_encoder_version: String by project
-val exposed_version: String by project
-val hikaricp_version: String by project
+val kotlin_version="1.9.22"
+val logback_version="1.4.14"
+val logstash_encoder_version="7.4"
+val exposed_version="0.45.0"
+val hikaricp_version = "5.1.0"
 val ktlint by configurations.creating
 
 plugins {
