@@ -24,7 +24,7 @@ data class Endring(
     val forcedModal: Boolean? = false,
     val modal: Modal? = null,
     val projectId: String = SANITY_PROJECT_ID,
-    val apiHost: String = "https://cdn.sanity.io"
+    val apiHost: String = "https://cdn.sanity.io",
 )
 
 @Serializable
@@ -37,11 +37,11 @@ typealias BlockContent = JsonElement
 data class Modal(val title: String, val forcedModal: Boolean, val slides: List<Slide>)
 
 @Serializable sealed class SlideImage {
-
     abstract val type: String
 }
 
 @Serializable class SlideImageJson(val slideImage: JsonElement, override val type: String = "json") : SlideImage()
+
 @Serializable class SlideImageDl(val slideImage: ByteArray, override val type: String = "dl") : SlideImage()
 
 @OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
@@ -60,13 +60,13 @@ data class BrukerData(val userId: String, val appId: String, val dataset: String
 data class SeenStatus(
     val userId: String,
     val appId: String,
-    val documentIds: List<String>
+    val documentIds: List<String>,
 )
 
 @Serializable
 data class SeenForcedStatus(
     val userId: String,
-    val documentIds: List<String>
+    val documentIds: List<String>,
 )
 
 @Serializable
@@ -74,14 +74,14 @@ data class SessionDuration(
     val userId: String,
     val appId: String,
     val duration: Int,
-    val unseenFields: Int
+    val unseenFields: Int,
 )
 
 @Serializable
 data class SeenWithTime(
     val userId: String,
     val documentId: String,
-    val timeStamp: String
+    val timeStamp: String,
 )
 
 @Serializable
@@ -105,7 +105,7 @@ data class UserSessionClass(
 @Serializable
 data class UniqueSessionsPerDay(
     val date: String,
-    val users: Long
+    val users: Long,
 )
 
 @Serializable
@@ -117,7 +117,7 @@ data class DocumentId(
 data class UniqueUsersPerDay(
     val appId: String,
     val moreThanMs: String,
-    val lessThanMs: String
+    val lessThanMs: String,
 )
 
 data class SubscribedApp(
@@ -126,5 +126,5 @@ data class SubscribedApp(
     val dataset: String,
     val cacheKey: String,
     val eventSource: BackgroundEventSource,
-    var connectionEstablished: Boolean = false
+    var connectionEstablished: Boolean = false,
 )
