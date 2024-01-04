@@ -52,6 +52,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.1")
     implementation("com.google.cloud.sql:postgres-socket-factory:1.15.1")
     implementation("org.flywaydb:flyway-core:10.4.1")
+    implementation("org.flywaydb:flyway-database-postgresql:10.4.1")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
