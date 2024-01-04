@@ -20,23 +20,24 @@ fun Application.errorHandling() {
             try {
                 setMdcValues(call)
 
-                val responseStatus: HttpStatusCode = when (cause) {
-                    is ResponseException -> cause.response.status
-                    // Catcher SerializationException/JsonDecodingException
-                    is IllegalArgumentException -> HttpStatusCode.BadRequest
-                    else -> HttpStatusCode.InternalServerError
-                }
+                val responseStatus: HttpStatusCode =
+                    when (cause) {
+                        is ResponseException -> cause.response.status
+                        // Catcher SerializationException/JsonDecodingException
+                        is IllegalArgumentException -> HttpStatusCode.BadRequest
+                        else -> HttpStatusCode.InternalServerError
+                    }
 
                 call.application.log.error(
                     "Feilet håndtering av ${call.request.httpMethod} - ${call.request.path()} status=$responseStatus",
-                    cause
+                    cause,
                 )
                 call.respond(
                     responseStatus,
                     mapOf(
                         "status" to "FEILET",
-                        "errorMelding" to cause.message
-                    )
+                        "errorMelding" to cause.message,
+                    ),
                 )
             } finally {
                 removeMdcValues()

@@ -30,11 +30,13 @@ import java.util.UUID
 @ExperimentalSerializationApi
 @Serializer(forClass = UUID::class)
 object UUIDSerializer : KSerializer<UUID> {
-
     override val descriptor: SerialDescriptor
         get() = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: UUID) {
+    override fun serialize(
+        encoder: Encoder,
+        value: UUID,
+    ) {
         encoder.encodeString(value.toString())
     }
 
@@ -46,14 +48,16 @@ object UUIDSerializer : KSerializer<UUID> {
 @ExperimentalSerializationApi
 @Serializer(forClass = Modal::class)
 object ModalSerializer : KSerializer<Modal?> {
-
     override val descriptor: SerialDescriptor =
         buildClassSerialDescriptor("Modal") {
             element<String>("slideHeader")
             element<List<Slide>>("slides")
         }
 
-    override fun serialize(encoder: Encoder, value: Modal?) {
+    override fun serialize(
+        encoder: Encoder,
+        value: Modal?,
+    ) {
         if (value == null) {
             encoder.encodeNull()
             return
@@ -63,9 +67,9 @@ object ModalSerializer : KSerializer<Modal?> {
             JsonObject(
                 mapOf(
                     "header" to JsonPrimitive(value.title),
-                    "slides" to JsonArray(value.slides.map(Json::encodeToJsonElement))
-                )
-            )
+                    "slides" to JsonArray(value.slides.map(Json::encodeToJsonElement)),
+                ),
+            ),
         )
     }
 
@@ -75,9 +79,10 @@ object ModalSerializer : KSerializer<Modal?> {
         if (numSlides < 1) return null
         val header = modal["modalHeader"]?.jsonPrimitive?.content ?: "Ny oppdatering"
         val forcedModal = modal["forcedModal"]?.jsonPrimitive?.boolean ?: false
-        val slides = (1..numSlides).map { "modalSlide$it" }.mapNotNull { modal[it]?.jsonObject }.map {
-            Json.decodeFromJsonElement(Slide.serializer(), it)
-        }
+        val slides =
+            (1..numSlides).map { "modalSlide$it" }.mapNotNull { modal[it]?.jsonObject }.map {
+                Json.decodeFromJsonElement(Slide.serializer(), it)
+            }
         return Modal(header, forcedModal, slides)
     }
 }
@@ -85,7 +90,6 @@ object ModalSerializer : KSerializer<Modal?> {
 @ExperimentalSerializationApi
 @Serializer(forClass = Slide::class)
 object SlideSerializer : KSerializer<Slide?> {
-
     override val descriptor: SerialDescriptor =
         buildClassSerialDescriptor("Slide") {
             element<String>("slideHeader")
@@ -95,7 +99,10 @@ object SlideSerializer : KSerializer<Slide?> {
         }
 
     @OptIn(InternalAPI::class)
-    override fun serialize(encoder: Encoder, value: Slide?) {
+    override fun serialize(
+        encoder: Encoder,
+        value: Slide?,
+    ) {
         if (value == null) {
             encoder.encodeNull()
             return
@@ -113,8 +120,8 @@ object SlideSerializer : KSerializer<Slide?> {
                         else -> null
                     },
                     if (value.altText != null) "altText" to JsonPrimitive(value.altText) else null,
-                ).toMap()
-            )
+                ).toMap(),
+            ),
         )
     }
 

@@ -60,19 +60,22 @@ fun Application.configureRouting(client: SanityClient) {
                                 it.copy(
                                     seen = it.id in seenEntryIds,
                                     seenForced = it.id in seenForcedEntryIds,
-                                    forcedModal = it.modal?.forcedModal
+                                    forcedModal = it.modal?.forcedModal,
                                 )
-                            }
+                            },
                         )
                     }
                 }
                 is Err -> {
-                    logger.info("Got a client request exception with error code ${endringslogger.error.response.status.value} and message ${endringslogger.error.message}")
+                    logger.info(
+                        "Got a client request exception with error code ${endringslogger.error.response.status.value} " +
+                            "and message ${endringslogger.error.message}",
+                    )
                     call.response.status(
                         HttpStatusCode(
                             endringslogger.error.response.status.value,
-                            "Received error: ${endringslogger.error.message}"
-                        )
+                            "Received error: ${endringslogger.error.message}",
+                        ),
                     )
                 }
             }
@@ -109,7 +112,6 @@ fun Application.configureRouting(client: SanityClient) {
             call.respond(getAllEntriesInSeen())
         }
         get("/data/seen-app") {
-
             call.request.queryParameters["appId"]?.let {
                 call.respond(getSeenEntriesForAppId(it))
             } ?: call.respond(HttpStatusCode.BadRequest)

@@ -33,7 +33,7 @@ fun Application.main() {
             Json {
                 prettyPrint = true
                 encodeDefaults = true
-            }
+            },
         )
     }
     install(CORS) {
@@ -62,11 +62,12 @@ fun Application.main() {
 
 fun main() {
     logger.info("Kjører flyway")
-    val flyway: Flyway = Flyway.configure().dataSource(
-        "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require",
-        DB_USERNAME,
-        DB_PASSWORD
-    ).load()
+    val flyway: Flyway =
+        Flyway.configure().dataSource(
+            "jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_DATABASE?reWriteBatchedInserts=true?sslmode=require",
+            DB_USERNAME,
+            DB_PASSWORD,
+        ).load()
     flyway.migrate()
 
     val client = SanityClient(SANITY_PROJECT_ID, "v1")
@@ -75,18 +76,19 @@ fun main() {
 
     embeddedServer(
         Netty,
-        environment = applicationEngineEnvironment {
-            module {
-                configureLogging()
-                errorHandling()
-                main()
-                configureRouting(client)
-            }
-            connector {
-                port = 8080
-                host = "0.0.0.0"
-            }
-        }
+        environment =
+            applicationEngineEnvironment {
+                module {
+                    configureLogging()
+                    errorHandling()
+                    main()
+                    configureRouting(client)
+                }
+                connector {
+                    port = 8080
+                    host = "0.0.0.0"
+                }
+            },
     ) {
     }.start(wait = true)
 }
