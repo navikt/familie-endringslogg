@@ -89,7 +89,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     tasks.findByName("ktlintCheck")?.mustRunAfter("ktlintFormat")
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
+        jvmTarget = "21"
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 }
