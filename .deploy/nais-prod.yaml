@@ -5,6 +5,9 @@ metadata:
   namespace: teamfamilie
   labels:
     team: teamfamilie
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   image: {{ image }}
   prometheus:
