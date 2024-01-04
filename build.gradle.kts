@@ -17,7 +17,6 @@ group = "no.nav.familie"
 version = "0.0.1"
 application {
     mainClass.set("no.nav.familie.ApplicationKt")
-    mainClassName = "no.nav.familie.ApplicationKt" // Need this while shadow plugin < 7
 }
 
 repositories {
