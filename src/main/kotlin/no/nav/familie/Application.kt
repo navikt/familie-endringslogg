@@ -68,6 +68,7 @@ fun main() {
             DB_USERNAME,
             DB_PASSWORD,
         ).load()
+    flyway.validate()
     flyway.migrate()
 
     val client = SanityClient(SANITY_PROJECT_ID, "v1")

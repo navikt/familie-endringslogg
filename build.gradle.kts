@@ -100,5 +100,6 @@ tasks{
         manifest {
             attributes(Pair("Main-Class", "no.nav.familie.ApplicationKt"))
         }
+        mergeServiceFiles()
     }
 }
