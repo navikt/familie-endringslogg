@@ -4,12 +4,15 @@ on: [workflow_dispatch]
 env:
   IMAGE: ghcr.io/navikt/familie-endringslogg:${{ github.sha }}
 
+permissions:
+  packages: write
+  id-token: write
+  contents: read
+
 jobs:
   build:
     name: Build and push package
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,6 +43,5 @@ jobs:
       - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: .deploy/nais-dev.yaml
