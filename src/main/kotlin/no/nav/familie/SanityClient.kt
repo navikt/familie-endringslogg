@@ -1,4 +1,3 @@
-
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.launchdarkly.eventsource.EventSource
@@ -107,24 +106,25 @@ class SanityClient(
                 response.result.map {
                     it.copy(
                         modal =
-                            it.modal?.copy(
-                                slides =
-                                    it.modal.slides.map { s ->
-                                        when (s.image) {
-                                            is SlideImageJson ->
-                                                s.copy(
-                                                    image =
-                                                        SlideImageDl(
-                                                            imageObjToByteArray(
-                                                                s.image.slideImage.jsonObject,
-                                                                dataset,
-                                                            ),
-                                                        ),
-                                                )
-                                            else -> s
-                                        }
-                                    },
-                            ),
+                        it.modal?.copy(
+                            slides =
+                            it.modal.slides.map { s ->
+                                when (s.image) {
+                                    is SlideImageJson ->
+                                        s.copy(
+                                            image =
+                                            SlideImageDl(
+                                                imageObjToByteArray(
+                                                    s.image.slideImage.jsonObject,
+                                                    dataset,
+                                                ),
+                                            ),
+                                        )
+
+                                    else -> s
+                                }
+                            },
+                        ),
                     )
                 },
             )
@@ -252,6 +252,7 @@ class SanityClient(
                     subscribedApps[origin]?.connectionEstablished = true
                     logger.info("Subscribing to listening API: $origin")
                 }
+
                 "mutation" -> { // a change is discovered in Sanity -> update cache
                     logger.info("Mutation in $origin discovered, updating cache.")
                     updateCache(
@@ -260,6 +261,7 @@ class SanityClient(
                         subscribedApps[origin]!!.dataset,
                     ) { q, p -> querySanity(q, p) }
                 }
+
                 "disconnect" -> { // client should disconnect and stay disconnected. Likely due to a query error
                     logger.info("Listening API for $origin requested disconnection with error message: ${messageEvent.data}")
                     subscribedApps[origin]?.connectionEstablished = false
@@ -274,7 +276,10 @@ class SanityClient(
             when (t) {
                 is StreamResetException -> logger.info("Stream mot Sanity ble resatt", t)
                 is StreamClosedByServerException -> logger.info("Connection mot sanity ble avbrutt", t)
-                else -> logger.error("En feil oppstod", t)
+                else -> when (t.cause) {
+                    is StreamResetException -> logger.info("Stream mot Sanity ble resatt", t)
+                    else -> logger.error("En feil oppstod", t)
+                }
             }
         }
 
