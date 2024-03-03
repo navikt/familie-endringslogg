@@ -1,8 +1,8 @@
 val ktor_version = "2.3.8"
 val kotlin_version="1.9.22"
-val logback_version="1.5.0"
+val logback_version="1.5.2"
 val logstash_encoder_version="7.4"
-val exposed_version="0.47.0"
+val exposed_version="0.48.0"
 val hikaricp_version = "5.1.0"
 val ktlint by configurations.creating
 
@@ -49,7 +49,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
-    implementation("org.postgresql:postgresql:42.7.1")
+    implementation("org.postgresql:postgresql:42.7.2")
     implementation("com.google.cloud.sql:postgres-socket-factory:1.16.0")
     implementation("org.flywaydb:flyway-core:10.8.1")
     implementation("org.flywaydb:flyway-database-postgresql:10.8.1")
