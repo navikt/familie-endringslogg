@@ -106,25 +106,25 @@ class SanityClient(
                 response.result.map {
                     it.copy(
                         modal =
-                        it.modal?.copy(
-                            slides =
-                            it.modal.slides.map { s ->
-                                when (s.image) {
-                                    is SlideImageJson ->
-                                        s.copy(
-                                            image =
-                                            SlideImageDl(
-                                                imageObjToByteArray(
-                                                    s.image.slideImage.jsonObject,
-                                                    dataset,
-                                                ),
-                                            ),
-                                        )
+                            it.modal?.copy(
+                                slides =
+                                    it.modal.slides.map { s ->
+                                        when (s.image) {
+                                            is SlideImageJson ->
+                                                s.copy(
+                                                    image =
+                                                        SlideImageDl(
+                                                            imageObjToByteArray(
+                                                                s.image.slideImage.jsonObject,
+                                                                dataset,
+                                                            ),
+                                                        ),
+                                                )
 
-                                    else -> s
-                                }
-                            },
-                        ),
+                                            else -> s
+                                        }
+                                    },
+                            ),
                     )
                 },
             )
@@ -276,10 +276,11 @@ class SanityClient(
             when (t) {
                 is StreamResetException -> logger.info("Stream mot Sanity ble resatt", t)
                 is StreamClosedByServerException -> logger.info("Connection mot sanity ble avbrutt", t)
-                else -> when (t.cause) {
-                    is StreamResetException -> logger.info("Stream mot Sanity ble resatt", t)
-                    else -> logger.error("En feil oppstod", t)
-                }
+                else ->
+                    when (t.cause) {
+                        is StreamResetException -> logger.info("Stream mot Sanity ble resatt", t)
+                        else -> logger.error("En feil oppstod", t)
+                    }
             }
         }
 
