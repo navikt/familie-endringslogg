@@ -56,6 +56,7 @@ fun Application.main() {
         allowHost("tilleggsstonader.ansatt.dev.nav.no", listOf("https"))
         allowHost("familie-endringslogg.sanity.studio", listOf("https"))
         allowHost("localhost:8000", listOf("http"))
+        allowHost("localhost:3000", listOf("http"))
 
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)
