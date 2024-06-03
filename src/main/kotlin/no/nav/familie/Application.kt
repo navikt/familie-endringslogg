@@ -51,6 +51,9 @@ fun Application.main() {
         allowHost("k9-los-web.nais.adeo.no", listOf("https"))
         allowHost("k9-los-web.intern.nav.no", listOf("https"))
         allowHost("k9-los-web.intern.dev.nav.no", listOf("https"))
+        allowHost("tilleggsstonader.intern.nav.no", listOf("https"))
+        allowHost("tilleggsstonader.intern.dev.nav.no", listOf("https"))
+        allowHost("tilleggsstonader.ansatt.dev.nav.no", listOf("https"))
         allowHost("familie-endringslogg.sanity.studio", listOf("https"))
         allowHost("localhost:8000", listOf("http"))
 
