@@ -31,7 +31,7 @@ spec:
         - application: familie-ks-sak-frontend
         - application: familie-klage-frontend
         - application: familie-tilbake-frontend
-        - application: tilleggsstonader-sak-fronten
+        - application: tilleggsstonader-sak-frontend
           namespace: tilleggsstonader
     outbound:
       external:
