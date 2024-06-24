@@ -68,7 +68,7 @@ private fun createHikariDataSource(url: String) =
             username = DB_USERNAME
             password = DB_PASSWORD
             maximumPoolSize = 5
-            maxLifetime = 30_000
+            maxLifetime = 900_000
             // isAutoCommit and transactionIsolation are set to sync with the default settings used by Exposed
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
