@@ -2,7 +2,7 @@ val ktor_version = "2.3.12"
 val kotlin_version="2.0.0"
 val logback_version="1.5.6"
 val logstash_encoder_version="7.4"
-val exposed_version="0.51.1"
+val exposed_version="0.52.0"
 val hikaricp_version = "5.1.0"
 val ktlint by configurations.creating
 
