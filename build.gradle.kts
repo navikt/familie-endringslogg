@@ -50,14 +50,14 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
     implementation("org.postgresql:postgresql:42.7.3")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.19.0")
-    implementation("org.flywaydb:flyway-core:10.15.0")
-    implementation("org.flywaydb:flyway-database-postgresql:10.15.0")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.19.1")
+    implementation("org.flywaydb:flyway-core:10.16.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.16.0")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("com.h2database:h2:2.2.224")
+    testImplementation("com.h2database:h2:2.3.230")
 }
 
 
