@@ -5,11 +5,7 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  IMAGE: ghcr.io/navikt/familie-endringslogg:${{ github.sha }}
-
 permissions:
-  packages: write
   id-token: write
   contents: read
 
@@ -31,13 +27,15 @@ jobs:
           GITHUB_USERNAME: x-access-token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew shadowJar
-      - name: Build and publish Docker image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo ${GITHUB_TOKEN} | docker login ghcr.io --username ${GITHUB_REPOSITORY} --password-stdin
-          docker build --tag ${IMAGE} .
-          docker push ${IMAGE}
+      - name: Push docker image to GAR and sign image
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: teamfamilie
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
   deploy:
     name: Deploy to GCP (dev and prod)
     needs: build
@@ -49,8 +47,10 @@ jobs:
         env:
           CLUSTER: dev-gcp
           RESOURCE: .deploy/nais-dev.yaml
+          IMAGE: ${{ needs.build.outputs.image }}
       - name: Deploy til prod-gcp
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-gcp
           RESOURCE: .deploy/nais-prod.yaml
+          IMAGE: ${{ needs.build.outputs.image }}
