@@ -24,13 +24,8 @@ import no.nav.familie.SeenForcedStatus
 import no.nav.familie.SeenStatus
 import no.nav.familie.SessionDuration
 import no.nav.familie.env.erIDev
-import no.nav.familie.getAllEntriesInSeen
-import no.nav.familie.getAllEntriesInUserSessions
-import no.nav.familie.getSeenEntriesForAppId
-import no.nav.familie.getSeenEntriesForDocId
 import no.nav.familie.getSeenEntriesForUser
 import no.nav.familie.getSeenForcedEntriesForUser
-import no.nav.familie.getUniqueVisitorsPerDayForAppId
 import no.nav.familie.insertSeenEntries
 import no.nav.familie.insertSeenForcedEntries
 import no.nav.familie.insertSessionDuration
@@ -80,37 +75,6 @@ fun Application.configureRouting(client: SanityClient) {
             val id = call.receive<DocumentId>()
             setLinkClicked(id.documentId)
             call.respond(HttpStatusCode.OK)
-        }
-
-        get("/data/seen-all") {
-            call.respond(getAllEntriesInSeen())
-        }
-        get("/data/seen-app") {
-            call.request.queryParameters["appId"]?.let {
-                call.respond(getSeenEntriesForAppId(it))
-            } ?: call.respond(HttpStatusCode.BadRequest)
-        }
-
-        get("/data/seen") {
-            call.request.queryParameters["docId"]?.let {
-                call.respond(getSeenEntriesForDocId(it))
-            } ?: call.respond(HttpStatusCode.BadRequest)
-        }
-
-        get("data/user-session-all") {
-            call.request.queryParameters["appId"]?.let {
-                call.respond(getAllEntriesInUserSessions(it))
-            } ?: call.respond(HttpStatusCode.BadRequest)
-        }
-
-        get("data/unique-user-sessions-per-day") {
-            call.request.queryParameters["appId"]?.let { appId ->
-                call.request.queryParameters["moreThanMs"]?.let { moreThan ->
-                    call.request.queryParameters["lessThanMs"]?.let { lessThan ->
-                        call.respond(getUniqueVisitorsPerDayForAppId(appId, moreThan.toInt(), lessThan.toInt()))
-                    } ?: call.respond(HttpStatusCode.BadRequest)
-                } ?: call.respond(HttpStatusCode.BadRequest)
-            } ?: call.respond(HttpStatusCode.BadRequest)
         }
     }
 }

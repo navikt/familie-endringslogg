@@ -8,22 +8,15 @@ import no.nav.familie.env.DB_PASSWORD
 import no.nav.familie.env.DB_PORT
 import no.nav.familie.env.DB_USERNAME
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
-import org.jetbrains.exposed.sql.castTo
-import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.javatime.JavaLocalDateColumnType
 import org.jetbrains.exposed.sql.javatime.timestamp
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.security.MessageDigest
 import java.time.Instant
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
@@ -139,88 +132,3 @@ fun insertSessionDuration(session: SessionDuration) =
             it[UserSession.timeStamp] = Instant.now().truncatedTo(ChronoUnit.SECONDS)
         }
     }
-
-fun getAllEntriesInSeen() =
-    transaction {
-        Seen.selectAll()
-            .map {
-                SeenDataClass(
-                    it[Seen.userId],
-                    it[Seen.documentId].toString(),
-                    it[Seen.openedLink],
-                    it[Seen.openedModal],
-                    it[Seen.timeStamp].toString(),
-                )
-            }
-    }
-
-fun getAllEntriesInUserSessions(appId: String) =
-    transaction {
-        UserSession.select { UserSession.appId eq appId }
-            .map {
-                UserSessionClass(
-                    it[UserSession.userId],
-                    it[UserSession.appId],
-                    it[UserSession.duration],
-                    it[UserSession.unseenFields],
-                    it[UserSession.timeStamp].toString(),
-                )
-            }
-    }
-
-fun getSeenEntriesForDocId(docId: String) =
-    transaction {
-        Seen.select { Seen.documentId eq UUID.fromString(docId) }
-            .map {
-                SeenDataClass(
-                    it[Seen.userId],
-                    it[Seen.documentId].toString(),
-                    it[Seen.openedLink],
-                    it[Seen.openedModal],
-                    it[Seen.timeStamp].toString(),
-                )
-            }
-    }
-
-fun getSeenEntriesForAppId(appId: String) =
-    transaction {
-        Seen.select { Seen.appId eq appId }
-            .map {
-                SeenDataClass(
-                    it[Seen.userId],
-                    it[Seen.documentId].toString(),
-                    it[Seen.openedLink],
-                    it[Seen.openedModal],
-                    it[Seen.timeStamp].toString(),
-                )
-            }
-    }
-
-/*
-The sql equivalent of the Exposed query:
-SELECT DISTINCT CAST(user_session.time_stamp AS DATE), COUNT(user_session.user_id)
-FROM user_session WHERE (user_session.app_id = appId) AND (user_session.duration > moreThanMs)
-GROUP BY CAST(user_session.time_stamp AS DATE)
-ORDER BY CAST(user_session.time_stamp AS DATE) ASC
- */
-fun getUniqueVisitorsPerDayForAppId(
-    appId: String,
-    moreThanMs: Int,
-    lessThanMs: Int,
-) = transaction {
-    UserSession
-        .slice(UserSession.timeStamp.castTo<LocalDate>(JavaLocalDateColumnType()), UserSession.userId.count())
-        .select {
-            (UserSession.appId eq appId) and
-                (UserSession.duration greaterEq moreThanMs) and
-                (UserSession.duration lessEq lessThanMs)
-        }
-        .groupBy(UserSession.timeStamp.castTo<LocalDate>(JavaLocalDateColumnType()))
-        .orderBy(UserSession.timeStamp.castTo<LocalDate>(JavaLocalDateColumnType()) to SortOrder.ASC)
-        .withDistinct().map {
-            UniqueSessionsPerDay(
-                it[UserSession.timeStamp.castTo<LocalDate>(JavaLocalDateColumnType())].toString(),
-                it[UserSession.userId.count()],
-            ) // .substring(0,10)
-        }
-}
