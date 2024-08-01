@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.javatime.timestamp
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.security.MessageDigest
@@ -77,12 +77,12 @@ fun connectToDatabase() {
 
 fun getSeenEntriesForUser(userId: String): List<UUID> =
     transaction {
-        Seen.select { Seen.userId eq sha256(userId) }.map { it[Seen.documentId] }
+        Seen.selectAll().where { Seen.userId eq sha256(userId) }.map { it[Seen.documentId] }
     }
 
 fun getSeenForcedEntriesForUser(userId: String): List<UUID> =
     transaction {
-        SeenForced.select { SeenForced.userId eq sha256(userId) }.map { it[SeenForced.documentId] }
+        SeenForced.selectAll().where { SeenForced.userId eq sha256(userId) }.map { it[SeenForced.documentId] }
     }
 
 fun insertSeenEntries(
