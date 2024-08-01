@@ -14,7 +14,8 @@ For å bygge
 
 For å kjøre lokalt:
 - `docker-compose up`
-- Legg inn miljøvariablene fra `Env.kt` og `docker-compose.yaml` i IntelliJ og kjør Application 
+- Legg inn disse miljøvariablene før du kjører Application:
+- `db_USERNAME=postgres;db_PASSWORD=test;db_HOST=localhost;db_PORT=9876;db_DATABASE=familie-endringslogg;NAIS_CLUSTER_NAME=dev-gcp`
 
 # Henvendelser
 

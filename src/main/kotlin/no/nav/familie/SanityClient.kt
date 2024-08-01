@@ -17,8 +17,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
 import no.nav.familie.EndringJson
 import no.nav.familie.SlideImageDl
 import no.nav.familie.SlideImageJson
@@ -62,35 +60,51 @@ class SanityClient(
 
     private var subscribedApps: HashMap<String, SubscribedApp> = hashMapOf()
 
-    private fun imageObjToByteArray(
-        obj: JsonObject,
-        dataset: String,
-    ): ByteArray {
-        val refJson: String = obj["asset"]!!.jsonObject["_ref"].toString().replace("\"", "")
-        val ref = refJson.replace("(-([A-Za-z]+))\$".toRegex(), ".\$2").drop(6)
-        val url = "https://cdn.sanity.io/images/$projId/$dataset/$ref"
-        val httpResp: HttpResponse
-        val byteArr: ByteArray
-        runBlocking {
-            httpResp = client.get(url)
-            byteArr = httpResp.body()
-        }
-
-        return byteArr
-    }
-
     fun query(
         queryString: String,
         dataset: String,
+        withImages: Boolean,
     ): Result<EndringJson, ClientRequestException> {
-        return tryCacheFirst(queryCache, queryString, dataset) { q, d -> querySanity(q, d) }
+        return when (withImages) {
+            true -> tryCacheFirst(queryCache, queryString, dataset) { q, d -> querySanity(q, d) }
+            false -> tryCacheFirst(queryCacheText, queryString, dataset) { q, d -> querySanityText(q, d) }
+        }
+    }
+
+    fun fetchImage(
+        slideImageRef: String,
+        dataset: String,
+    ): Result<SlideImageDl, ClientRequestException> {
+        return try {
+            val value = SlideImageDl(slideImage = imageObjToByteArray(slideImageRef, dataset))
+            Ok(value)
+        } catch (e: ClientRequestException) {
+            Err(e)
+        }
     }
 
     private val queryCache: Cache<String, EndringJson> =
-        Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS) //
-            .maximumSize(1000)
-            .build()
+        Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).maximumSize(1000).build()
+
+    private val queryCacheText: Cache<String, EndringJson> =
+        Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).maximumSize(1000).build()
+
+    @Throws(ClientRequestException::class)
+    private fun querySanityText(
+        queryString: String,
+        dataset: String,
+    ): EndringJson {
+        val response: EndringJson
+        runBlocking {
+            response = client.get("$baseUrl/data/query/$dataset?query=$queryString").body()
+        }
+        val listenUrl = "$baseUrl/data/listen/$dataset?query=$queryString&includeResult=false&visibility=query"
+        // call was successful. must then check if the response is empty. If empty -> don't subscribe
+        if (response.result.isNotEmpty() and !subscribedApps.contains(listenUrl)) {
+            subscribeToSanityApp(listenUrl, queryString, dataset)
+        }
+        return response
+    }
 
     @Throws(ClientRequestException::class)
     private fun querySanity(
@@ -115,7 +129,7 @@ class SanityClient(
                                                     image =
                                                         SlideImageDl(
                                                             imageObjToByteArray(
-                                                                s.image.slideImage.jsonObject,
+                                                                s.image.getReference(),
                                                                 dataset,
                                                             ),
                                                         ),
@@ -199,6 +213,7 @@ class SanityClient(
         subscribedApps.remove(listenUrl)
         if (cachekey != null) {
             queryCache.asMap().remove(cachekey)
+            queryCacheText.asMap().remove(cachekey)
         }
     }
 
@@ -260,6 +275,11 @@ class SanityClient(
                         subscribedApps[origin]!!.queryString,
                         subscribedApps[origin]!!.dataset,
                     ) { q, p -> querySanity(q, p) }
+                    updateCache(
+                        queryCacheText,
+                        subscribedApps[origin]!!.queryString,
+                        subscribedApps[origin]!!.dataset,
+                    ) { q, p -> querySanityText(q, p) }
                 }
 
                 "disconnect" -> { // client should disconnect and stay disconnected. Likely due to a query error
@@ -267,6 +287,7 @@ class SanityClient(
                     subscribedApps[origin]?.connectionEstablished = false
                     subscribedApps[origin]?.eventSource?.close()
                     queryCache.asMap().remove(subscribedApps[origin]?.cacheKey)
+                    queryCacheText.asMap().remove(subscribedApps[origin]?.cacheKey)
                     subscribedApps.remove(origin)
                 }
             }
@@ -299,5 +320,21 @@ class SanityClient(
                 ConnectionErrorHandler.Action.SHUTDOWN
             }
         }
+    }
+
+    private fun imageObjToByteArray(
+        refJson: String,
+        dataset: String,
+    ): ByteArray {
+        val ref = refJson.replace("(-([A-Za-z]+))\$".toRegex(), ".\$2").drop(6)
+        val url = "https://cdn.sanity.io/images/$projId/$dataset/$ref"
+        val httpResp: HttpResponse
+        val byteArr: ByteArray
+        runBlocking {
+            httpResp = client.get(url)
+            byteArr = httpResp.body()
+        }
+
+        return byteArr
     }
 }
