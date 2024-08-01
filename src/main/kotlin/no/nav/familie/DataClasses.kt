@@ -7,6 +7,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 import no.nav.familie.env.SANITY_PROJECT_ID
 
 @Serializable
@@ -40,7 +41,9 @@ data class Modal(val title: String, val forcedModal: Boolean, val slides: List<S
     abstract val type: String
 }
 
-@Serializable class SlideImageJson(val slideImage: JsonElement, override val type: String = "json") : SlideImage()
+@Serializable class SlideImageJson(val slideImage: JsonElement, override val type: String = "json") : SlideImage() {
+    fun getReference() = this.slideImage.jsonObject["asset"]!!.jsonObject["_ref"].toString().replace("\"", "")
+}
 
 @Serializable class SlideImageDl(val slideImage: ByteArray, override val type: String = "dl") : SlideImage()
 
@@ -55,6 +58,9 @@ data class Slide(
 
 @Serializable
 data class BrukerData(val userId: String, val appId: String, val dataset: String, val maxEntries: Int)
+
+@Serializable
+data class BildeData(val slideImageRef: String, val dataset: String)
 
 @Serializable
 data class SeenStatus(

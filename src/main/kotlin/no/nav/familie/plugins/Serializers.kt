@@ -114,9 +114,8 @@ object SlideSerializer : KSerializer<Slide?> {
                     "slideHeader" to JsonPrimitive(value.header),
                     if (value.description != null) "slideDescription" to value.description else null,
                     when (value.image) {
-                        is SlideImageDl -> {
-                            "slideImage" to Json.encodeToJsonElement(value.image.slideImage.encodeBase64())
-                        }
+                        is SlideImageDl -> "slideImage" to Json.encodeToJsonElement(value.image.slideImage.encodeBase64())
+                        is SlideImageJson -> "slideImageRef" to JsonPrimitive(value.image.getReference())
                         else -> null
                     },
                     if (value.altText != null) "altText" to JsonPrimitive(value.altText) else null,
