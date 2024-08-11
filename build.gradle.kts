@@ -1,5 +1,5 @@
 val ktor_version = "2.3.12"
-val kotlin_version="2.0.0"
+val kotlin_version="2.0.10"
 val logback_version="1.5.6"
 val logstash_encoder_version="8.0"
 val exposed_version="0.53.0"
@@ -8,8 +8,8 @@ val ktlint by configurations.creating
 
 plugins {
     application
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
+    kotlin("jvm") version "2.0.10"
+    kotlin("plugin.serialization") version "2.0.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
