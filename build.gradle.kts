@@ -11,6 +11,7 @@ plugins {
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.serialization") version "2.0.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("org.cyclonedx.bom") version "1.8.1"
 }
 
 group = "no.nav.familie"
@@ -103,3 +104,16 @@ tasks{
         mergeServiceFiles()
     }
 }
+
+tasks.cyclonedxBom {
+    setIncludeConfigs(listOf("runtimeClasspath", "compileClasspath"))
+}
+
+tasks.register("generateSBOM") {
+    dependsOn("cyclonedxBom")
+    doLast {
+        println("SBOM generated at build/reports/bom.json")
+    }
+}
+
+
