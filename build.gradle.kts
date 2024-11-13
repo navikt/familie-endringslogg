@@ -115,5 +115,3 @@ tasks.register("generateSBOM") {
         println("SBOM generated at build/reports/bom.json")
     }
 }
-
-

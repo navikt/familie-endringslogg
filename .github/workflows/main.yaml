@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew shadowJar
       - name: Generer SBOM
-        run: ./gradlew cyclonedxBom
+        run: ./gradlew generateSBOM
       - name: Push docker image to GAR and sign image
         uses: nais/docker-build-push@v0
         id: docker-build-push
@@ -36,6 +36,7 @@ jobs:
           team: teamfamilie
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          byosbom: build/reports/bom.json
     outputs:
       image: ${{ steps.docker-build-push.outputs.image }}
   deploy:
