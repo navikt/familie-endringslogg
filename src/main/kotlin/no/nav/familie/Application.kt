@@ -43,6 +43,7 @@ fun Application.main() {
         allowHost("ensligmorellerfar.intern.nav.no", listOf("https"))
         allowHost("barnetrygd.intern.dev.nav.no", listOf("https"))
         allowHost("barnetrygd.intern.nav.no", listOf("https"))
+        allowHost("barnetrygd.ansatt.dev.nav.no", listOf("https"))
         allowHost("app.adeo.no", listOf("https"))
         allowHost("app-q1.adeo.no", listOf("https"))
         allowHost("k9.intern.nav.no", listOf("https"))
