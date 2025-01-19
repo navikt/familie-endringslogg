@@ -2,7 +2,7 @@ val ktor_version = "2.3.13"
 val kotlin_version="2.1.0"
 val logback_version="1.5.16"
 val logstash_encoder_version="8.0"
-val exposed_version="0.57.0"
+val exposed_version="0.58.0"
 val hikaricp_version = "6.2.1"
 val ktlint by configurations.creating
 
@@ -11,7 +11,7 @@ plugins {
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.serialization") version "2.1.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.cyclonedx.bom") version "1.10.0"
+    id("org.cyclonedx.bom") version "2.0.0"
 }
 
 group = "no.nav.familie"
@@ -50,11 +50,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
-    implementation("org.postgresql:postgresql:42.7.4")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.21.2")
-    implementation("org.flywaydb:flyway-core:11.1.1")
-    implementation("org.flywaydb:flyway-database-postgresql:11.1.1")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+    implementation("org.postgresql:postgresql:42.7.5")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.22.0")
+    implementation("org.flywaydb:flyway-core:11.2.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.2.0")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
