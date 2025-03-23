@@ -1,6 +1,6 @@
 val ktor_version = "2.3.13"
-val kotlin_version="2.1.10"
-val logback_version="1.5.17"
+val kotlin_version="2.1.20"
+val logback_version="1.5.18"
 val logstash_encoder_version="8.0"
 val exposed_version="0.60.0"
 val hikaricp_version = "6.2.1"
@@ -8,8 +8,8 @@ val ktlint by configurations.creating
 
 plugins {
     application
-    kotlin("jvm") version "2.1.10"
-    kotlin("plugin.serialization") version "2.1.10"
+    kotlin("jvm") version "2.1.20"
+    kotlin("plugin.serialization") version "2.1.20"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.cyclonedx.bom") version "2.2.0"
 }
@@ -51,9 +51,9 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
     implementation("org.postgresql:postgresql:42.7.5")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.23.1")
-    implementation("org.flywaydb:flyway-core:11.3.4")
-    implementation("org.flywaydb:flyway-database-postgresql:11.3.4")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.24.0")
+    implementation("org.flywaydb:flyway-core:11.4.1")
+    implementation("org.flywaydb:flyway-database-postgresql:11.4.1")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
