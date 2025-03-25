@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val ktor_version = "2.3.13"
 val kotlin_version="2.1.10"
 val logback_version="1.5.17"
@@ -16,6 +18,9 @@ plugins {
 
 group = "no.nav.familie"
 version = "0.0.1"
+java.sourceCompatibility = JavaVersion.VERSION_21
+java.targetCompatibility = JavaVersion.VERSION_21
+
 application {
     mainClass.set("no.nav.familie.ApplicationKt")
 }
@@ -89,10 +94,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     dependsOn("ktlintFormat")
     dependsOn("ktlintCheck")
     tasks.findByName("ktlintCheck")?.mustRunAfter("ktlintFormat")
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "21"
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    compilerOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xopt-in=kotlin.RequiresOptIn")
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 

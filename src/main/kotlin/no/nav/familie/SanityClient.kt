@@ -165,7 +165,7 @@ class SanityClient(
         }
     }
 
-    private fun <V> updateCache(
+    private fun <V : Any> updateCache(
         cache: Cache<String, V>,
         query: String,
         dataset: String,
