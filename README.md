@@ -3,7 +3,9 @@
 En applikasjon som henter endringslogg-innhold fra Sanity og fungerer som en proxy for frontend-applikasjoner.
 For å holde orden på hvilke endringer saksbehandlere har lest om allerede lagres dette i en database.
 
-Går mot https://familie-endringslogg.sanity.studio/
+Prosjektet heter familie-endringslogg i sanity og innholdet er delt opp etter team. Link til sanity hvor det kan gjøres endringer på meldingene: https://familie-endringslogg.sanity.studio/
+
+Dersom det er behov for tilgang eller annen administrasjon av endringslogg: https://www.sanity.io/organizations/ojSsHMQGf/project/avzz8jwq  
 
 ## Tilgang til tjenesten
 For at en frontend-applikasjon skal få tilgang må urlen den kjører på legges inn i CORS-filteret
