@@ -19,6 +19,11 @@ spec:
         databases:
           - envVarPrefix: db
             name: familie-endringslogg
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
   ingresses:
     - https://familie-endringslogg.intern.nav.no
   replicas:
