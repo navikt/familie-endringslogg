@@ -19,6 +19,7 @@ import kotlinx.serialization.json.encodeToJsonElement
 import no.nav.familie.BildeData
 import no.nav.familie.BrukerData
 import no.nav.familie.DocumentId
+import no.nav.familie.Endring
 import no.nav.familie.SeenForcedStatus
 import no.nav.familie.SeenStatus
 import no.nav.familie.SessionDuration
@@ -34,7 +35,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -115,7 +115,6 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.fetchEndringslogger(
     val query = if (erIDev()) alleMeldingerQuery else publiserteMedlingerQuery
 
     val queryStringEncoded = URLEncoder.encode(query, "utf-8")
-    val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     when (val endringslogger = client.query(queryStringEncoded, dataset, withImages)) {
         is Ok -> {
@@ -124,19 +123,12 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.fetchEndringslogger(
             } else {
                 call.respond(
                     endringslogger.value.result.map {
-                        val utløpsdatoSattISanity = it.expiryDate?.let { datoString -> LocalDate.parse(datoString, dateTimeFormatter) }
-                        val endringsloggLansertDato = LocalDate.parse(it.date, dateTimeFormatter)
-
-                        val utløpsdato = utløpsdatoSattISanity ?: endringsloggLansertDato.plusMonths(1)
-
-                        val utløpt = LocalDate.now().isAfter(utløpsdato)
-
-                        val forcedModal = it.modal?.forcedModal ?: false
+                        val erForcedModal = harForcedModal(it)
 
                         it.copy(
                             seen = it.id in seenEntryIds,
                             seenForced = it.id in seenForcedEntryIds,
-                            forcedModal = forcedModal && !utløpt,
+                            forcedModal = erForcedModal,
                         )
                     },
                 )
@@ -155,4 +147,18 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.fetchEndringslogger(
             call.response.status(HttpStatusCode(500, "Uventet feil ved uthenting av endringslogg"))
         }
     }
+}
+
+private fun harForcedModal(endring: Endring): Boolean {
+    val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+    val utløpsdatoSattISanity = endring.expiryDate?.let { datoString -> LocalDate.parse(datoString, dateTimeFormatter) }
+    val endringsloggLansertDato = LocalDate.parse(endring.date, dateTimeFormatter)
+
+    val utløpsdato = utløpsdatoSattISanity ?: endringsloggLansertDato.plusMonths(1)
+
+    val utløpt = LocalDate.now().isAfter(utløpsdato)
+
+    val forcedModal = endring.modal?.forcedModal ?: false
+    return forcedModal && !utløpt
 }
