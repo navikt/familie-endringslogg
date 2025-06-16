@@ -18,6 +18,7 @@ data class Endring(
     val title: String,
     val description: BlockContent,
     val date: String? = null,
+    val expiryDate: String? = null,
     val linkAttributes: LinkAttributes? = null,
     @SerialName("_id") val id: String,
     val seen: Boolean = false,
