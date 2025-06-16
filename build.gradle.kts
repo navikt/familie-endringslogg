@@ -1,21 +1,26 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val ktor_version = "2.3.13"
-val kotlin_version="2.0.21"
-val logback_version="1.5.12"
-val logstash_encoder_version="8.0"
-val exposed_version="0.56.0"
-val hikaricp_version = "6.2.1"
+val kotlin_version="2.1.21"
+val logback_version="1.5.18"
+val logstash_encoder_version="8.1"
+val exposed_version="0.61.0"
+val hikaricp_version = "6.3.0"
 val ktlint by configurations.creating
 
 plugins {
     application
-    kotlin("jvm") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("jvm") version "2.1.21"
+    kotlin("plugin.serialization") version "2.1.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.cyclonedx.bom") version "1.10.0"
+    id("org.cyclonedx.bom") version "2.3.0"
 }
 
 group = "no.nav.familie"
 version = "0.0.1"
+java.sourceCompatibility = JavaVersion.VERSION_21
+java.targetCompatibility = JavaVersion.VERSION_21
+
 application {
     mainClass.set("no.nav.familie.ApplicationKt")
 }
@@ -50,11 +55,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
-    implementation("org.postgresql:postgresql:42.7.4")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.21.0")
-    implementation("org.flywaydb:flyway-core:11.0.0")
-    implementation("org.flywaydb:flyway-database-postgresql:11.0.0")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
+    implementation("org.postgresql:postgresql:42.7.5")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.25.0")
+    implementation("org.flywaydb:flyway-core:11.8.2")
+    implementation("org.flywaydb:flyway-database-postgresql:11.8.2")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
@@ -89,10 +94,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     dependsOn("ktlintFormat")
     dependsOn("ktlintCheck")
     tasks.findByName("ktlintCheck")?.mustRunAfter("ktlintFormat")
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "21"
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    compilerOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict", "-Xopt-in=kotlin.RequiresOptIn")
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
