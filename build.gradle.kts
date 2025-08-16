@@ -5,7 +5,7 @@ val kotlin_version="2.2.0"
 val logback_version="1.5.18"
 val logstash_encoder_version="8.1"
 val exposed_version="0.61.0"
-val hikaricp_version = "6.3.2"
+val hikaricp_version = "7.0.1"
 val ktlint by configurations.creating
 
 plugins {
@@ -57,8 +57,8 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
     implementation("org.postgresql:postgresql:42.7.7")
     implementation("com.google.cloud.sql:postgres-socket-factory:1.25.2")
-    implementation("org.flywaydb:flyway-core:11.10.4")
-    implementation("org.flywaydb:flyway-database-postgresql:11.10.4")
+    implementation("org.flywaydb:flyway-core:11.11.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.11.0")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.2")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
