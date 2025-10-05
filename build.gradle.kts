@@ -1,19 +1,19 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val ktor_version = "2.3.13"
-val kotlin_version="2.2.0"
-val logback_version="1.5.18"
+val kotlin_version="2.2.20"
+val logback_version="1.5.19"
 val logstash_encoder_version="8.1"
 val exposed_version="0.61.0"
-val hikaricp_version = "7.0.1"
+val hikaricp_version = "7.0.2"
 val ktlint by configurations.creating
 
 plugins {
     application
-    kotlin("jvm") version "2.2.0"
-    kotlin("plugin.serialization") version "2.2.0"
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.serialization") version "2.2.20"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.cyclonedx.bom") version "2.3.1"
+    id("org.cyclonedx.bom") version "3.0.0"
 }
 
 group = "no.nav.familie"
@@ -55,15 +55,15 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     implementation("com.zaxxer:HikariCP:$hikaricp_version")
-    implementation("org.postgresql:postgresql:42.7.7")
-    implementation("com.google.cloud.sql:postgres-socket-factory:1.25.2")
-    implementation("org.flywaydb:flyway-core:11.11.0")
-    implementation("org.flywaydb:flyway-database-postgresql:11.11.0")
+    implementation("org.postgresql:postgresql:42.7.8")
+    implementation("com.google.cloud.sql:postgres-socket-factory:1.25.3")
+    implementation("org.flywaydb:flyway-core:11.13.2")
+    implementation("org.flywaydb:flyway-database-postgresql:11.13.2")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.2")
     implementation("com.launchdarkly:okhttp-eventsource:4.1.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-    testImplementation("com.h2database:h2:2.3.232")
+    testImplementation("com.h2database:h2:2.4.240")
 }
 
 
