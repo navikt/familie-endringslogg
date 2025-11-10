@@ -55,6 +55,10 @@ fun Application.main() {
         allowHost("tilleggsstonader.intern.nav.no", listOf("https"))
         allowHost("tilleggsstonader.intern.dev.nav.no", listOf("https"))
         allowHost("tilleggsstonader.ansatt.dev.nav.no", listOf("https"))
+        allowHost("kelvin.intern.nav.no", listOf("https"))
+        allowHost("kelvin.intern.dev.nav.no", listOf("https"))
+        allowHost("kelvin.ansatt.dev.nav.no", listOf("https"))
+
         allowHost("familie-endringslogg.sanity.studio", listOf("https"))
         allowHost("navikt.github.io", listOf("https"))
         allowHost("localhost:8000", listOf("http"))
