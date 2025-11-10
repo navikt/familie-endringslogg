@@ -39,6 +39,8 @@ spec:
         - application: familie-tilbake-frontend
         - application: tilleggsstonader-sak-frontend
           namespace: tilleggsstonader
+        - application: saksbehandling
+          namespace: aap
     outbound:
       external:
         - host: cdn.sanity.io
