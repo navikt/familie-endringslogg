@@ -109,13 +109,14 @@ tasks{
     }
 }
 
-tasks.cyclonedxBom {
-    setIncludeConfigs(listOf("runtimeClasspath", "compileClasspath"))
+tasks.cyclonedxDirectBom {
+    includeConfigs = listOf("runtimeClasspath")
+    skipConfigs = listOf("compileClasspath", "testCompileClasspath")
 }
 
 tasks.register("generateSBOM") {
-    dependsOn("cyclonedxBom")
+    dependsOn("cyclonedxDirectBom")
     doLast {
-        println("SBOM generated at build/reports/bom.json")
+        println("SBOM generated")
     }
 }
