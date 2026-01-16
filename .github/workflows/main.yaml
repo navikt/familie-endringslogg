@@ -34,7 +34,7 @@ jobs:
         id: docker-build-push
         with:
           team: teamfamilie
-          byosbom: build/reports/bom.json
+          byosbom: build/reports/cyclonedx-direct/bom.json
     outputs:
       image: ${{ steps.docker-build-push.outputs.image }}
   deploy:
