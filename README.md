@@ -1,3 +1,5 @@
+# Erstattet av: https://github.com/navikt/endringslogg
+
 # Familie-Endringslogg
 
 En applikasjon som henter endringslogg-innhold fra Sanity og fungerer som en proxy for frontend-applikasjoner.
