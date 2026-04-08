@@ -16,6 +16,7 @@ spec:
     sqlInstances:
       - type: POSTGRES_15
         tier: db-f1-micro
+        cascadingDelete: true
         databases:
           - envVarPrefix: db
             name: familie-endringslogg
